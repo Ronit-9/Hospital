@@ -18,7 +18,7 @@ const reviewSchema = new mongoose.Schema({
   },
   rating: {
     type: Number,
-    required: [true, 'Rating is required'],
+    required: true,
     min: 1,
     max: 5,
   },
@@ -28,19 +28,19 @@ const reviewSchema = new mongoose.Schema({
   },
 }, { timestamps: true })
 
-// recalculate doctor rating after every review saved
+// recalculate doctor rating after every review
 reviewSchema.post('save', async function () {
-  const Doctor = mongoose.model('Doctor')
   const result = await mongoose.model('Review').aggregate([
     { $match: { doctorId: this.doctorId } },
     { $group: { _id: '$doctorId', avgRating: { $avg: '$rating' }, count: { $sum: 1 } } }
   ])
   if (result.length > 0) {
-    await Doctor.findByIdAndUpdate(this.doctorId, {
+    await mongoose.model('Doctor').findByIdAndUpdate(this.doctorId, {
       rating: result[0].avgRating.toFixed(1),
       totalReviews: result[0].count,
     })
   }
 })
 
-export default mongoose.model('Review', reviewSchema)
+const Review = mongoose.model('Review', reviewSchema)
+export default Review

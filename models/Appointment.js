@@ -13,11 +13,11 @@ const appointmentSchema = new mongoose.Schema({
   },
   date: {
     type: Date,
-    required: [true, 'Appointment date is required'],
+    required: true,
   },
   timeSlot: {
     type: String,
-    required: [true, 'Time slot is required'],
+    required: true,
   },
   status: {
     type: String,
@@ -39,4 +39,5 @@ const appointmentSchema = new mongoose.Schema({
   },
 }, { timestamps: true })
 
-export default mongoose.model('Appointment', appointmentSchema)
+const Appointment = mongoose.model('Appointment', appointmentSchema)
+export default Appointment

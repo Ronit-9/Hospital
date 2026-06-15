@@ -5,7 +5,7 @@ const availabilitySchema = new mongoose.Schema({
     type: String,
     enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
   },
-  slots: [String],  // ['09:00', '10:00', '11:00']
+  slots: [String],
 })
 
 const doctorSchema = new mongoose.Schema({
@@ -21,16 +21,16 @@ const doctorSchema = new mongoose.Schema({
   },
   specialization: {
     type: String,
-    required: [true, 'Specialization is required'],
+    required: true,
   },
-  qualifications: [String],   // ['MBBS', 'MD']
+  qualifications: [String],
   experience: {
     type: Number,
     default: 0,
   },
   consultFee: {
     type: Number,
-    required: [true, 'Consultation fee is required'],
+    required: true,
   },
   rating: {
     type: Number,
@@ -51,4 +51,5 @@ const doctorSchema = new mongoose.Schema({
   },
 }, { timestamps: true })
 
-export default mongoose.model('Doctor', doctorSchema)
+const Doctor = mongoose.model('Doctor', doctorSchema)
+export default Doctor

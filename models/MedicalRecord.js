@@ -24,7 +24,7 @@ const medicalRecordSchema = new mongoose.Schema({
   },
   diagnosis: {
     type: String,
-    required: [true, 'Diagnosis is required'],
+    required: true,
   },
   prescription: [prescriptionSchema],
   followUpDate: {
@@ -37,4 +37,5 @@ const medicalRecordSchema = new mongoose.Schema({
   },
 }, { timestamps: true })
 
-export default mongoose.model('MedicalRecord', medicalRecordSchema)
+const MedicalRecord = mongoose.model('MedicalRecord', medicalRecordSchema)
+export default MedicalRecord

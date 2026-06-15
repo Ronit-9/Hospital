@@ -5,6 +5,12 @@ import cors from 'cors'
 import connectDB from './config/db.js'
 import authRoutes from './routes/authRouter.js'
 import { errorHandler } from './middleware/error.middleware.js'
+import departmentRoutes from './routes/departmentRouter.js'
+import appointmentRoutes from './routes/appointmentRouter.js'
+import doctorRoutes from './routes/doctorRouter.js'
+import reviewRoutes from './routes/reviewRouter.js'
+import medicalRecordRoutes from './routes/medicalRecordRouter.js'
+import paymentRoutes from './routes/paymentRouter.js'
 
 dotenv.config()
 
@@ -21,7 +27,12 @@ app.use(cookieParser())
 
 // routes
 app.use('/api/auth', authRoutes)
-
+app.use('/api/departments', departmentRoutes)
+app.use('/api/doctors', doctorRoutes)
+app.use('/api/appointments', appointmentRoutes)
+app.use('/api/reviews', reviewRoutes)
+app.use('/api/records', medicalRecordRoutes)
+app.use('/api/payments', paymentRoutes)
 // error handler — only once, must be last
 app.use(errorHandler)
 

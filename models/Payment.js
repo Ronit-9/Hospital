@@ -13,7 +13,7 @@ const paymentSchema = new mongoose.Schema({
   },
   amount: {
     type: Number,
-    required: [true, 'Amount is required'],
+    required: true,
   },
   method: {
     type: String,
@@ -35,4 +35,5 @@ const paymentSchema = new mongoose.Schema({
   },
 }, { timestamps: true })
 
-export default mongoose.model('Payment', paymentSchema)
+const Payment = mongoose.model('Payment', paymentSchema)
+export default Payment
