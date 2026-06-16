@@ -3,7 +3,7 @@ import { successResponse, errorResponse } from '../utils/apiResponse.js'
 
 // POST book appointment — patient only
 export const bookAppointment = async (req, res) => {
-  const { doctorId, date, timeSlot, type, symptoms } = req.body
+  const { doctorId, departmentId, date, timeSlot, type, symptoms, gender } = req.body
 
   // check if slot already booked
   const exists = await Appointment.findOne({
@@ -19,10 +19,12 @@ export const bookAppointment = async (req, res) => {
   const appointment = await Appointment.create({
     patientId: req.user._id,
     doctorId,
+    departmentId: departmentId || null,
     date,
     timeSlot,
     type,
     symptoms,
+    gender,
   })
 
   return successResponse(res, 201, 'Appointment booked', appointment)
@@ -32,6 +34,7 @@ export const bookAppointment = async (req, res) => {
 export const getMyAppointments = async (req, res) => {
   const appointments = await Appointment.find({ patientId: req.user._id })
     .populate('doctorId')
+    .populate('departmentId', 'name')
     .sort({ date: -1 })
   return successResponse(res, 200, 'Appointments fetched', appointments)
 }
@@ -40,6 +43,7 @@ export const getMyAppointments = async (req, res) => {
 export const getDoctorAppointments = async (req, res) => {
   const appointments = await Appointment.find({ doctorId: req.params.doctorId })
     .populate('patientId', 'name email phone')
+    .populate('departmentId', 'name')
     .sort({ date: -1 })
   return successResponse(res, 200, 'Appointments fetched', appointments)
 }
@@ -83,6 +87,7 @@ export const getAllAppointments = async (req, res) => {
   const appointments = await Appointment.find()
     .populate('patientId', 'name email')
     .populate('doctorId')
+    .populate('departmentId', 'name')
     .sort({ date: -1 })
   return successResponse(res, 200, 'All appointments fetched', appointments)
 }

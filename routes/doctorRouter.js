@@ -6,17 +6,31 @@ import {
   updateDoctor,
   deleteDoctor,
   getDoctorsByDepartment,
+  getDoctorAvailability,
 } from '../controllers/doctor.controller.js'
-import { verifyToken } from '../middleware/auth.middleware.js'
-import { checkRole } from '../middleware/role.middleware.js'
+import { verifyToken, authorizeRoles } from '../middleware/auth.middleware.js'
+import { methodNotAllowed } from '../utils/methodNotAllowed.js'
+import upload from '../middleware/upload.middleware.js'
 
 const router = express.Router()
 
-router.route('/').get(getDoctors)
-router.route('/:id').get(getDoctor)
-router.route('/department/:departmentId').get(getDoctorsByDepartment)
-router.route('/').post(verifyToken, checkRole('admin'), createDoctor)
-router.route('/:id').put(verifyToken, checkRole('admin'), updateDoctor)
-router.route('/:id').delete(verifyToken, checkRole('admin'), deleteDoctor)
+router.route('/')
+  .get(getDoctors)
+  .post(verifyToken, authorizeRoles('admin'), createDoctor)
+  .all(methodNotAllowed)
+
+router.route('/department/:departmentId')
+  .get(getDoctorsByDepartment)
+  .all(methodNotAllowed)
+
+router.route('/:id')
+  .get(getDoctor)
+  .put(verifyToken, authorizeRoles('admin'), upload.single('image'), updateDoctor)
+  .delete(verifyToken, authorizeRoles('admin'), deleteDoctor)
+  .all(methodNotAllowed)
+
+router.route('/:id/availability')
+  .get(getDoctorAvailability)
+  .all(methodNotAllowed)
 
 export default router

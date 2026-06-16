@@ -45,6 +45,11 @@ const doctorSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  socialLinks: {
+    facebook: { type: String, default: '' },
+    twitter: { type: String, default: '' },
+    linkedin: { type: String, default: '' },
+  },
   isAvailable: {
     type: Boolean,
     default: true,

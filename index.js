@@ -11,8 +11,16 @@ import doctorRoutes from './routes/doctorRouter.js'
 import reviewRoutes from './routes/reviewRouter.js'
 import medicalRecordRoutes from './routes/medicalRecordRouter.js'
 import paymentRoutes from './routes/paymentRouter.js'
+import hospitalsettingsRoutes from './routes/hospitalsettingsRouter.js'
+import serviceRoutes from './routes/serviceRouter.js'
+import newsRoutes from './routes/newsRouter.js'
+import fs from 'fs'
 
 dotenv.config()
+
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads')
+}
 
 const app = express()
 
@@ -25,6 +33,9 @@ app.use(cors({
 app.use(express.json())
 app.use(cookieParser())
 
+// serve uploaded images
+app.use('/uploads', express.static('uploads'))
+
 // routes
 app.use('/api/auth', authRoutes)
 app.use('/api/departments', departmentRoutes)
@@ -33,7 +44,10 @@ app.use('/api/appointments', appointmentRoutes)
 app.use('/api/reviews', reviewRoutes)
 app.use('/api/records', medicalRecordRoutes)
 app.use('/api/payments', paymentRoutes)
-// error handler — only once, must be last
+app.use('/api/settings', hospitalsettingsRoutes)
+app.use('/api/services', serviceRoutes)
+app.use('/api/news', newsRoutes)
+
 app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000

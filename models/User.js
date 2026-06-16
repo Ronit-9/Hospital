@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  profileImage: {
+    type: String,
+    default: '',
+  },
   isVerified: {
     type: Boolean,
     default: false,
@@ -40,5 +44,4 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 }
 
 const User = mongoose.model('User', userSchema)
-
 export default User

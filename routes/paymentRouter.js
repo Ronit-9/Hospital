@@ -5,14 +5,25 @@ import {
   getAllPayments,
   refundPayment,
 } from '../controllers/payment.controller.js'
-import { verifyToken } from '../middleware/auth.middleware.js'
-import { checkRole } from '../middleware/role.middleware.js'
+import { verifyToken, authorizeRoles } from '../middleware/auth.middleware.js'
+import { methodNotAllowed } from '../utils/methodNotAllowed.js'
 
 const router = express.Router()
 
-router.route('/').post(verifyToken, checkRole('patient'), createPayment)
-router.route('/my').get(verifyToken, checkRole('patient'), getMyPayments)
-router.route('/all').get(verifyToken, checkRole('admin'), getAllPayments)
-router.route('/refund/:id').put(verifyToken, checkRole('admin'), refundPayment)
+router.route('/')
+  .post(verifyToken, authorizeRoles('patient'), createPayment)
+  .all(methodNotAllowed)
+
+router.route('/my')
+  .get(verifyToken, authorizeRoles('patient'), getMyPayments)
+  .all(methodNotAllowed)
+
+router.route('/all')
+  .get(verifyToken, authorizeRoles('admin'), getAllPayments)
+  .all(methodNotAllowed)
+
+router.route('/refund/:id')
+  .put(verifyToken, authorizeRoles('admin'), refundPayment)
+  .all(methodNotAllowed)
 
 export default router

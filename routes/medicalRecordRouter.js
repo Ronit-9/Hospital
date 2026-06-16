@@ -5,14 +5,22 @@ import {
   getMedicalRecord,
   getAllMedicalRecords,
 } from '../controllers/medicalRecord.controller.js'
-import { verifyToken } from '../middleware/auth.middleware.js'
-import { checkRole } from '../middleware/role.middleware.js'
+import { verifyToken, authorizeRoles } from '../middleware/auth.middleware.js'
+import { methodNotAllowed } from '../utils/methodNotAllowed.js'
 
 const router = express.Router()
 
-router.route('/').post(verifyToken, checkRole('doctor'), createMedicalRecord)
-router.route('/my').get(verifyToken, checkRole('patient'), getMyMedicalRecords)
-router.route('/:id').get(verifyToken, getMedicalRecord)
-router.route('/all').get(verifyToken, checkRole('admin'), getAllMedicalRecords)
+router.route('/')
+  .post(verifyToken, authorizeRoles('doctor'), createMedicalRecord)
+  .get(verifyToken, authorizeRoles('admin'), getAllMedicalRecords)
+  .all(methodNotAllowed)
+
+router.route('/my')
+  .get(verifyToken, authorizeRoles('patient'), getMyMedicalRecords)
+  .all(methodNotAllowed)
+
+router.route('/:id')
+  .get(verifyToken, authorizeRoles('doctor', 'admin', 'patient'), getMedicalRecord)
+  .all(methodNotAllowed)
 
 export default router

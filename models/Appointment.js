@@ -11,6 +11,11 @@ const appointmentSchema = new mongoose.Schema({
     ref: 'Doctor',
     required: true,
   },
+  departmentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Department',
+    default: null,
+  },
   date: {
     type: Date,
     required: true,
@@ -18,6 +23,11 @@ const appointmentSchema = new mongoose.Schema({
   timeSlot: {
     type: String,
     required: true,
+  },
+  gender: {
+    type: String,
+    enum: ['male', 'female', 'other'],
+    default: 'male',
   },
   status: {
     type: String,

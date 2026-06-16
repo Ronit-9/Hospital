@@ -7,23 +7,30 @@ import {
   cancelAppointment,
   getAllAppointments,
 } from '../controllers/appointment.controller.js'
-import { verifyToken } from '../middleware/auth.middleware.js'
-import { checkRole } from '../middleware/role.middleware.js'
+import { verifyToken, authorizeRoles } from '../middleware/auth.middleware.js'
+import { methodNotAllowed } from '../utils/methodNotAllowed.js'
 
 const router = express.Router()
 
-// patient routes
-router.route('/book').post(verifyToken, checkRole('patient'), bookAppointment)
-router.route('/my').get(verifyToken, checkRole('patient'), getMyAppointments)
-router.route('/cancel/:id').put(verifyToken, checkRole('patient'), cancelAppointment)
+router.route('/')
+  .post(verifyToken, authorizeRoles('patient'), bookAppointment)
+  .get(verifyToken, authorizeRoles('admin'), getAllAppointments)
+  .all(methodNotAllowed)
 
-// doctor routes
-router.route('/doctor/:doctorId').get(verifyToken, checkRole('doctor'), getDoctorAppointments)
+router.route('/my')
+  .get(verifyToken, authorizeRoles('patient'), getMyAppointments)
+  .all(methodNotAllowed)
 
-// doctor or admin
-router.route('/status/:id').put(verifyToken, checkRole('doctor', 'admin'), updateAppointmentStatus)
+router.route('/doctor/:doctorId')
+  .get(verifyToken, authorizeRoles('doctor', 'admin'), getDoctorAppointments)
+  .all(methodNotAllowed)
 
-// admin only
-router.route('/all').get(verifyToken, checkRole('admin'), getAllAppointments)
+router.route('/:id/status')
+  .put(verifyToken, authorizeRoles('doctor', 'admin'), updateAppointmentStatus)
+  .all(methodNotAllowed)
+
+router.route('/:id/cancel')
+  .put(verifyToken, authorizeRoles('patient'), cancelAppointment)
+  .all(methodNotAllowed)
 
 export default router
