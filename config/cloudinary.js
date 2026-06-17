@@ -1,4 +1,3 @@
-// config/cloudinary.js
 import { v2 as cloudinary } from 'cloudinary'
 import { CloudinaryStorage } from 'multer-storage-cloudinary'
 import multer from 'multer'
@@ -11,11 +10,11 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: {
-    folder: 'news',           // folder name in your Cloudinary dashboard
+  params: async (req, file) => ({
+    folder: 'news',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-    transformation: [{ width: 800, crop: 'limit' }], // optional resize
-  },
+    public_id: `${Date.now()}-${file.originalname}`,
+  }),
 })
 
 export const upload = multer({ storage })
