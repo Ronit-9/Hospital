@@ -14,6 +14,7 @@ import paymentRoutes from './routes/paymentRouter.js'
 import hospitalsettingsRoutes from './routes/hospitalsettingsRouter.js'
 import serviceRoutes from './routes/serviceRouter.js'
 import newsRoutes from './routes/newsRouter.js'
+import contactRoutes from './routes/contactRouter.js'
 import fs from 'fs'
 
 dotenv.config()
@@ -47,7 +48,7 @@ app.use('/api/payments', paymentRoutes)
 app.use('/api/settings', hospitalsettingsRoutes)
 app.use('/api/services', serviceRoutes)
 app.use('/api/news', newsRoutes)
-
+app.use('/api/contact', contactRoutes)
 app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000
