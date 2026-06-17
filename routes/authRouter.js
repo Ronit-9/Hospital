@@ -10,7 +10,7 @@ import {
   deleteUser,
 } from '../controllers/auth.controller.js'
 import { verifyToken, authorizeRoles } from '../middleware/auth.middleware.js'
-import upload from '../middleware/upload.middleware.js'
+import { upload } from '../config/cloudinary.js'
 import { methodNotAllowed } from '../utils/methodNotAllowed.js'
 
 const router = express.Router()

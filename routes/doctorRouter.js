@@ -10,7 +10,7 @@ import {
 } from '../controllers/doctor.controller.js'
 import { verifyToken, authorizeRoles } from '../middleware/auth.middleware.js'
 import { methodNotAllowed } from '../utils/methodNotAllowed.js'
-import upload from '../middleware/upload.middleware.js'
+import { upload } from '../config/cloudinary.js'
 
 const router = express.Router()
 
