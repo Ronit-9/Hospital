@@ -1,5 +1,7 @@
-import express from 'express'
+
 import dotenv from 'dotenv'
+dotenv.config()
+import express from 'express'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import connectDB from './config/db.js'
@@ -15,18 +17,13 @@ import hospitalsettingsRoutes from './routes/hospitalsettingsRouter.js'
 import serviceRoutes from './routes/serviceRouter.js'
 import newsRoutes from './routes/newsRouter.js'
 import contactRoutes from './routes/contactRouter.js'
-import fs from 'fs'
-
-dotenv.config()
-
-if (!fs.existsSync('uploads')) {
-  fs.mkdirSync('uploads')
-}
 
 const app = express()
 
+// connect to MongoDB
 connectDB()
 
+// middleware
 app.use(cors({
   origin: ['http://localhost:5173', 'https://hospital-vmds.onrender.com'],
   credentials: true,
@@ -34,13 +31,12 @@ app.use(cors({
 app.use(express.json())
 app.use(cookieParser())
 
+// root route
 app.get('/', (req, res) => {
-  res.send('Hospital Management API is running...');
-});
+  res.send('Hospital Management API is running...')
+})
 
 
-// serve uploaded images
-app.use('/uploads', express.static('uploads'))
 
 // routes
 app.use('/api/auth', authRoutes)
@@ -54,6 +50,8 @@ app.use('/api/settings', hospitalsettingsRoutes)
 app.use('/api/services', serviceRoutes)
 app.use('/api/news', newsRoutes)
 app.use('/api/contact', contactRoutes)
+
+// error handler
 app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000
