@@ -15,20 +15,7 @@ const router = express.Router()
 
 router.route('/')
   .get(getAllNews)
-  .post(
-    verifyToken,
-    authorizeRoles('admin'),
-    (req, res, next) => {
-      upload.single('image')(req, res, (err) => {
-        if (err) {
-          console.log('UPLOAD ERROR:', err)
-          return res.status(500).json({ success: false, message: err.message })
-        }
-        next()
-      })
-    },
-    createNews
-  )
+  .post(verifyToken, authorizeRoles('admin'), upload.single('image'), createNews)
   .all(methodNotAllowed)
 
 router.route('/:id')
