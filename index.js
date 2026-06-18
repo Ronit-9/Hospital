@@ -29,8 +29,6 @@ connectDB()
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'http://localhost:5175',
-    'https://hospital-vmds.onrender.com',
     'https://hospital-one-lemon.vercel.app'
   ],
   credentials: true,

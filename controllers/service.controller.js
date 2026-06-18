@@ -1,84 +1,92 @@
 import Service from '../models/Service.js'
 import { successResponse, errorResponse } from '../utils/apiResponse.js'
-import fs from 'fs'
-import path from 'path'
 
-// helper to delete old image file
-const deleteOldImage = (imageUrl) => {
-  if (!imageUrl) return
-  const filename = imageUrl.split('/uploads/')[1]
-  if (!filename) return
-  const filepath = path.join('uploads', filename)
-  if (fs.existsSync(filepath)) {
-    fs.unlinkSync(filepath)
-  }
-}
+// ─── Public ───────────────────────────────────────────────
 
 // GET all active services
 export const getServices = async (req, res) => {
-  const services = await Service.find({ isActive: true })
-  return successResponse(res, 200, 'Services fetched', services)
+  try {
+    const services = await Service.find({ isActive: true })
+    return successResponse(res, 200, 'Services fetched', services)
+  } catch (err) {
+    return errorResponse(res, 500, 'Failed to fetch services')
+  }
 }
 
 // GET single service
 export const getService = async (req, res) => {
-  const service = await Service.findById(req.params.id)
-  if (!service) {
-    return errorResponse(res, 404, 'Service not found')
+  try {
+    const service = await Service.findById(req.params.id)
+    if (!service) return errorResponse(res, 404, 'Service not found')
+    return successResponse(res, 200, 'Service fetched', service)
+  } catch (err) {
+    return errorResponse(res, 500, 'Failed to fetch service')
   }
-  return successResponse(res, 200, 'Service fetched', service)
 }
 
-// POST create service — admin only
+// ─── Admin ────────────────────────────────────────────────
+
+// GET all services including inactive
+export const getAllServices = async (req, res) => {
+  try {
+    const services = await Service.find()
+    return successResponse(res, 200, 'All services fetched', services)
+  } catch (err) {
+    return errorResponse(res, 500, 'Failed to fetch services')
+  }
+}
+
+// CREATE service
 export const createService = async (req, res) => {
-  const { name, description, icon } = req.body
+  try {
+    const { name, description, icon, image } = req.body || {}
 
-  const exists = await Service.findOne({ name })
-  if (exists) {
-    // delete uploaded file if service already exists
-    if (req.file) deleteOldImage(`/uploads/${req.file.filename}`)
-    return errorResponse(res, 400, 'Service already exists')
+    const exists = await Service.findOne({ name })
+    if (exists) return errorResponse(res, 400, 'Service already exists')
+
+    const service = await Service.create({
+      name,
+      description,
+      icon,
+      image: image || '',
+    })
+
+    return successResponse(res, 201, 'Service created', service)
+  } catch (err) {
+    return errorResponse(res, 500, 'Failed to create service')
   }
-
-  const image = req.file
-    ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
-    : req.body.image || ''
-
-  const service = await Service.create({ name, description, icon, image })
-  return successResponse(res, 201, 'Service created', service)
 }
 
-// PUT update service — admin only
+// UPDATE service
 export const updateService = async (req, res) => {
-  const service = await Service.findById(req.params.id)
-  if (!service) {
-    return errorResponse(res, 404, 'Service not found')
+  try {
+    const service = await Service.findById(req.params.id)
+    if (!service) return errorResponse(res, 404, 'Service not found')
+
+    const updated = await Service.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body,
+        image: req.body.image || service.image,
+      },
+      { new: true, runValidators: true }
+    )
+
+    return successResponse(res, 200, 'Service updated', updated)
+  } catch (err) {
+    return errorResponse(res, 500, 'Failed to update service')
   }
-
-  if (req.file) {
-    // delete old image before saving new one
-    deleteOldImage(service.image)
-    req.body.image = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
-  }
-
-  const updated = await Service.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { returnDocument: 'after' }
-  )
-
-  return successResponse(res, 200, 'Service updated', updated)
 }
 
-// DELETE service — admin only
+// DELETE service
 export const deleteService = async (req, res) => {
-  const service = await Service.findByIdAndDelete(req.params.id)
-  if (!service) {
-    return errorResponse(res, 404, 'Service not found')
+  try {
+    const service = await Service.findById(req.params.id)
+    if (!service) return errorResponse(res, 404, 'Service not found')
+
+    await Service.findByIdAndDelete(req.params.id)
+    return successResponse(res, 200, 'Service deleted', {})
+  } catch (err) {
+    return errorResponse(res, 500, 'Failed to delete service')
   }
-
-  // delete image file when service is deleted
-  deleteOldImage(service.image)
-
-  return successResponse(res, 200, 'Service deleted', {})
 }

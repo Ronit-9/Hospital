@@ -1,19 +1,6 @@
 import Doctor from '../models/Doctor.js'
 import User from '../models/User.js'
 import { successResponse, errorResponse } from '../utils/apiResponse.js'
-import fs from 'fs'
-import path from 'path'
-
-// Utility: delete old local image
-const deleteOldImage = (imageUrl) => {
-  if (!imageUrl) return
-  const filename = imageUrl.split('/uploads/')[1]
-  if (!filename) return
-  const filepath = path.join('uploads', filename)
-  if (fs.existsSync(filepath)) {
-    fs.unlinkSync(filepath)
-  }
-}
 
 // GET all doctors
 export const getDoctors = async (req, res) => {
@@ -21,7 +8,6 @@ export const getDoctors = async (req, res) => {
     const doctors = await Doctor.find({ isAvailable: true })
       .populate('userId', 'name email phone profileImage')
       .populate('department', 'name')
-
     return successResponse(res, 200, 'Doctors fetched', doctors)
   } catch (err) {
     return errorResponse(res, 500, 'Server error', err.message)
@@ -34,10 +20,7 @@ export const getDoctor = async (req, res) => {
     const doctor = await Doctor.findById(req.params.id)
       .populate('userId', 'name email phone profileImage')
       .populate('department', 'name')
-
-    if (!doctor) {
-      return errorResponse(res, 404, 'Doctor not found')
-    }
+    if (!doctor) return errorResponse(res, 404, 'Doctor not found')
     return successResponse(res, 200, 'Doctor fetched', doctor)
   } catch (err) {
     return errorResponse(res, 500, 'Server error', err.message)
@@ -49,19 +32,22 @@ export const createDoctor = async (req, res) => {
   try {
     const {
       userId, department, specialization,
-      qualifications, experience, consultFee, bio,
-      availability, socialLinks
+      qualifications, experience, consultFee,
+      bio, availability, socialLinks, image,
     } = req.body
 
     const exists = await Doctor.findOne({ userId })
-    if (exists) {
-      return errorResponse(res, 400, 'Doctor profile already exists')
+    if (exists) return errorResponse(res, 400, 'Doctor profile already exists')
+
+    // if image URL provided, update the user's profileImage
+    if (image) {
+      await User.findByIdAndUpdate(userId, { profileImage: image })
     }
 
     const doctor = await Doctor.create({
       userId, department, specialization,
-      qualifications, experience, consultFee, bio,
-      availability, socialLinks
+      qualifications, experience, consultFee,
+      bio, availability, socialLinks,
     })
 
     return successResponse(res, 201, 'Doctor created', doctor)
@@ -74,21 +60,19 @@ export const createDoctor = async (req, res) => {
 export const updateDoctor = async (req, res) => {
   try {
     const doctor = await Doctor.findById(req.params.id).populate('userId')
-    if (!doctor) {
-      return errorResponse(res, 404, 'Doctor not found')
-    }
+    if (!doctor) return errorResponse(res, 404, 'Doctor not found')
 
-    // handle image update
-    if (req.file) {
-      deleteOldImage(doctor.userId.profileImage)
-      const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
-      await User.findByIdAndUpdate(doctor.userId._id, { profileImage: imageUrl })
+    const { image, ...rest } = req.body
+
+    // if new image URL provided, update the user's profileImage
+    if (image) {
+      await User.findByIdAndUpdate(doctor.userId._id, { profileImage: image })
     }
 
     const updated = await Doctor.findByIdAndUpdate(
       req.params.id,
-      req.body,
-      { returnDocument: 'after' }
+      rest,
+      { new: true, runValidators: true }
     )
 
     return successResponse(res, 200, 'Doctor updated', updated)
@@ -100,14 +84,10 @@ export const updateDoctor = async (req, res) => {
 // DELETE doctor — admin only
 export const deleteDoctor = async (req, res) => {
   try {
-    const doctor = await Doctor.findById(req.params.id).populate('userId')
-    if (!doctor) {
-      return errorResponse(res, 404, 'Doctor not found')
-    }
+    const doctor = await Doctor.findById(req.params.id)
+    if (!doctor) return errorResponse(res, 404, 'Doctor not found')
 
-    deleteOldImage(doctor.userId.profileImage)
     await Doctor.findByIdAndDelete(req.params.id)
-
     return successResponse(res, 200, 'Doctor deleted', {})
   } catch (err) {
     return errorResponse(res, 500, 'Server error', err.message)
@@ -120,7 +100,6 @@ export const getDoctorsByDepartment = async (req, res) => {
     const doctors = await Doctor.find({ department: req.params.departmentId })
       .populate('userId', 'name email phone profileImage')
       .populate('department', 'name')
-
     return successResponse(res, 200, 'Doctors fetched', doctors)
   } catch (err) {
     return errorResponse(res, 500, 'Server error', err.message)
@@ -131,17 +110,13 @@ export const getDoctorsByDepartment = async (req, res) => {
 export const getDoctorAvailability = async (req, res) => {
   try {
     const doctor = await Doctor.findById(req.params.id)
-    if (!doctor) {
-      return errorResponse(res, 404, 'Doctor not found')
-    }
+    if (!doctor) return errorResponse(res, 404, 'Doctor not found')
 
     const { date } = req.query
-    if (!date) {
-      return errorResponse(res, 400, 'Date is required')
-    }
+    if (!date) return errorResponse(res, 400, 'Date is required')
 
     const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'long' })
-    const dayAvailability = doctor.availability.find(a => a.day === dayName)
+    const dayAvailability = doctor.availability.find((a) => a.day === dayName)
 
     if (!dayAvailability || dayAvailability.slots.length === 0) {
       return successResponse(res, 200, 'No slots available', { day: dayName, slots: [] })

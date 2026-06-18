@@ -9,18 +9,17 @@ import {
 } from '../controllers/news.controller.js'
 import { verifyToken, authorizeRoles } from '../middleware/auth.middleware.js'
 import { methodNotAllowed } from '../utils/methodNotAllowed.js'
-import upload from '../middleware/upload.middleware.js'
 
 const router = express.Router()
 
 router.route('/')
   .get(getAllNews)
-  .post(verifyToken, authorizeRoles('admin'), upload.single('image'), createNews)
+  .post(verifyToken, authorizeRoles('admin'), createNews)
   .all(methodNotAllowed)
 
 router.route('/:id')
   .get(getNews)
-  .put(verifyToken, authorizeRoles('admin'), upload.single('image'), updateNews)
+  .put(verifyToken, authorizeRoles('admin'), updateNews)
   .delete(verifyToken, authorizeRoles('admin'), deleteNews)
   .all(methodNotAllowed)
 
