@@ -5,19 +5,19 @@ export const appointmentApi = baseApi.injectEndpoints({
     // Patient
     bookAppointment: builder.mutation({
       query: (data) => ({
-        url: 'api/appointments',
+        url: '/appointments',
         method: 'POST',
         body: data,
       }),
       invalidatesTags: ['Appointment'],
     }),
     getMyAppointments: builder.query({
-      query: () => 'api/appointments/my',
+      query: () => '/appointments/my',
       providesTags: ['Appointment'],
     }),
     cancelAppointment: builder.mutation({
       query: (id) => ({
-        url: `api/appointments/${id}/cancel`,
+        url: `/appointments/${id}/cancel`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Appointment'],
@@ -25,12 +25,12 @@ export const appointmentApi = baseApi.injectEndpoints({
 
     // Admin
     getAllAppointments: builder.query({
-      query: () => 'api/appointments',
+      query: () => '/appointments',
       providesTags: ['Appointment'],
     }),
     updateAppointmentStatus: builder.mutation({
       query: ({ id, body }) => ({
-        url: `api/appointments/${id}/status`,
+        url: `/appointments/${id}/status`,
         method: 'PUT',
         body,
       }),
@@ -38,7 +38,7 @@ export const appointmentApi = baseApi.injectEndpoints({
     }),
     deleteAppointment: builder.mutation({
       query: (id) => ({
-        url: `api/appointments/${id}`,
+        url: `/appointments/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Appointment'],
@@ -46,7 +46,7 @@ export const appointmentApi = baseApi.injectEndpoints({
 
     // Doctor
     getDoctorAppointments: builder.query({
-      query: (doctorId) => `api/appointments/doctor/${doctorId}`,
+      query: (doctorId) => `/appointments/doctor/${doctorId}`,
       providesTags: ['Appointment'],
     }),
   }),

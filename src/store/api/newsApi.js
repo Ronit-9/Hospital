@@ -5,20 +5,20 @@ export const newsApi = baseApi.injectEndpoints({
 
     // GET all news
     getAllNews: builder.query({
-      query: () => 'api/news',
+      query: () => '/news',
       providesTags: ['News'],
     }),
 
     // GET single news
     getNews: builder.query({
-      query: (id) => `api/news/${id}`,
+      query: (id) => `/news/${id}`,
       providesTags: ['News'],
     }),
 
     // CREATE news with image
     createNews: builder.mutation({
       query: (formData) => ({
-        url: 'api/news',
+        url: '/news',
         method: 'POST',
         body: formData,
       }),
@@ -28,7 +28,7 @@ export const newsApi = baseApi.injectEndpoints({
     // UPDATE news with image
     updateNews: builder.mutation({
       query: ({ id, formData }) => ({
-        url: `api/news/${id}`,
+        url: `/news/${id}`,
         method: 'PUT',
         body: formData,
       }),
@@ -38,7 +38,7 @@ export const newsApi = baseApi.injectEndpoints({
     // DELETE news
     deleteNews: builder.mutation({
       query: (id) => ({
-        url: `api/news/${id}`,
+        url: `/news/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['News'],
@@ -47,7 +47,7 @@ export const newsApi = baseApi.injectEndpoints({
     // LIKE news
     likeNews: builder.mutation({
       query: (id) => ({
-        url: `api/news/${id}/like`,
+        url: `/news/${id}/like`,
         method: 'PUT',
       }),
       invalidatesTags: ['News'],

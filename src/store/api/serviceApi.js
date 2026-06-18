@@ -4,22 +4,22 @@ export const serviceApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Public
     getServices: builder.query({
-      query: () => 'api/services',
+      query: () => '/services',
       providesTags: ['Service'],
     }),
     getService: builder.query({
-      query: (id) => `api/services/${id}`,
+      query: (id) => `/services/${id}`,
       providesTags: ['Service'],
     }),
 
     // Admin
     getAllServices: builder.query({
-      query: () => 'api/services', // adjust if your admin route differs
+      query: () => '/services', // adjust if your admin route differs
       providesTags: ['Service'],
     }),
     createService: builder.mutation({
       query: (body) => ({
-        url: 'api/services',
+        url: '/services',
         method: 'POST',
         body,
       }),
@@ -27,7 +27,7 @@ export const serviceApi = baseApi.injectEndpoints({
     }),
     updateService: builder.mutation({
       query: ({ id, body }) => ({
-        url: `api/services/${id}`,
+        url: `/services/${id}`,
         method: 'PUT',
         body,
       }),
@@ -35,7 +35,7 @@ export const serviceApi = baseApi.injectEndpoints({
     }),
     deleteService: builder.mutation({
       query: (id) => ({
-        url: `api/services/${id}`,
+        url: `/services/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Service'],

@@ -3,16 +3,16 @@ import { baseApi } from './baseApi'
 export const departmentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getDepartments: builder.query({
-      query: () => 'api/departments',
+      query: () => '/departments',
       providesTags: ['Department'],
     }),
     getDepartment: builder.query({
-      query: (id) => `api/departments/${id}`,
+      query: (id) => `/departments/${id}`,
       providesTags: ['Department'],
     }),
     createDepartment: builder.mutation({
       query: (data) => ({
-        url: 'api/departments',
+        url: '/departments',
         method: 'POST',
         body: data,
       }),
@@ -20,7 +20,7 @@ export const departmentApi = baseApi.injectEndpoints({
     }),
     updateDepartment: builder.mutation({
       query: ({ id, ...data }) => ({
-        url: `api/departments/${id}`,
+        url: `/departments/${id}`,
         method: 'PUT',
         body: data,
       }),
@@ -28,7 +28,7 @@ export const departmentApi = baseApi.injectEndpoints({
     }),
     deleteDepartment: builder.mutation({
       query: (id) => ({
-        url: `api/departments/${id}`,
+        url: `/departments/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Department'],

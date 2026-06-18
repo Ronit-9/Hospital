@@ -3,20 +3,20 @@ import { baseApi } from './baseApi'
 export const doctorApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getDoctors: builder.query({
-      query: () => 'api/doctors',
+      query: () => '/doctors',
       providesTags: ['Doctor'],
     }),
     getDoctor: builder.query({
-      query: (id) => `api/doctors/${id}`,
+      query: (id) => `/doctors/${id}`,
       providesTags: ['Doctor'],
     }),
     getDoctorsByDepartment: builder.query({
-      query: (departmentId) => `api/doctors/department/${departmentId}`,
+      query: (departmentId) => `/doctors/department/${departmentId}`,
       providesTags: ['Doctor'],
     }),
     createDoctor: builder.mutation({
       query: (data) => ({
-        url: 'api/doctors',
+        url: '/doctors',
         method: 'POST',
         body: data,
       }),
@@ -24,7 +24,7 @@ export const doctorApi = baseApi.injectEndpoints({
     }),
     updateDoctor: builder.mutation({
       query: ({ id, body }) => ({
-        url: `api/doctors/${id}`,
+        url: `/doctors/${id}`,
         method: 'PUT',
         body,
       }),
@@ -32,7 +32,7 @@ export const doctorApi = baseApi.injectEndpoints({
     }),
     deleteDoctor: builder.mutation({
       query: (id) => ({
-        url: `api/doctors/${id}`,
+        url: `/doctors/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Doctor'],

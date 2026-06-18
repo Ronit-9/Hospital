@@ -4,25 +4,25 @@ export const contactApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     sendMessage: builder.mutation({
       query: (data) => ({
-        url: 'api/contact',
+        url: '/contact',
         method: 'POST',
         body: data,
       }),
     }),
     getAllMessages: builder.query({
-      query: () => 'api/contact',
+      query: () => '/contact',
       providesTags: ['Contact'],
     }),
     markAsRead: builder.mutation({
       query: (id) => ({
-        url: `api/contact/${id}/read`,
+        url: `/contact/${id}/read`,
         method: 'PUT',
       }),
       invalidatesTags: ['Contact'],
     }),
     deleteMessage: builder.mutation({
       query: (id) => ({
-        url: `api/contact/${id}`,
+        url: `/contact/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Contact'],
