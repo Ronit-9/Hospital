@@ -1,11 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary'
 import dotenv from 'dotenv'
-
 dotenv.config()
-
-console.log('CLOUD NAME:', process.env.CLOUDINARY_CLOUD_NAME)
-console.log('API KEY:', process.env.CLOUDINARY_API_KEY)
-console.log('API SECRET EXISTS:', !!process.env.CLOUDINARY_API_SECRET)
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -13,4 +8,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
-export default cloudinary
+// ping test — checks API auth without uploading anything
+cloudinary.api.ping()
+  .then((result) => console.log('PING SUCCESS:', result))
+  .catch((err) => console.log('PING FAILED:', JSON.stringify(err, null, 2)))

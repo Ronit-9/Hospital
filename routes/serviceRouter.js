@@ -8,7 +8,7 @@ import {
 } from '../controllers/service.controller.js'
 import { verifyToken, authorizeRoles } from '../middleware/auth.middleware.js'
 import { methodNotAllowed } from '../utils/methodNotAllowed.js'
-import { upload } from '../config/cloudinary.js'
+import upload from '../middleware/upload.middleware.js'
 
 const router = express.Router()
 

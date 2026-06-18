@@ -1,6 +1,7 @@
-
+// index.js
 import dotenv from 'dotenv'
-dotenv.config()
+dotenv.config()   // ✅ load env vars first
+
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
@@ -25,7 +26,11 @@ connectDB()
 
 // middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://hospital-vmds.onrender.com'],
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5175',
+    'https://hospital-vmds.onrender.com'
+  ],
   credentials: true,
 }))
 app.use(express.json())
@@ -36,7 +41,8 @@ app.get('/', (req, res) => {
   res.send('Hospital Management API is running...')
 })
 
-
+// ✅ remove local uploads serving if using Cloudinary
+// app.use('/uploads', express.static('uploads'))
 
 // routes
 app.use('/api/auth', authRoutes)

@@ -1,13 +1,28 @@
 import News from '../models/News.js'
 import { successResponse, errorResponse } from '../utils/apiResponse.js'
+import fs from 'fs'
+import path from 'path'
+import { uploadToCloudinary } from '../utils/uploadToCloudinary.js'
 import cloudinary from '../config/cloudinary.js'
+
+const deleteOldImage = async (imageUrl) => {
+  if (!imageUrl || !imageUrl.includes('cloudinary')) return
+  // extract public_id from url: .../meddical/abc123.jpg → meddical/abc123
+  const parts = imageUrl.split('/')
+  const filename = parts[parts.length - 1].split('.')[0]
+  const publicId = `meddical/${filename}`
+  try {
+    await cloudinary.uploader.destroy(publicId)
+  } catch (err) {
+    console.log('Cloudinary delete error:', err.message)
+  }
+}
 
 // GET all published news
 export const getAllNews = async (req, res) => {
   const news = await News.find({ isPublished: true })
     .populate('author', 'name profileImage')
     .sort({ publishedAt: -1 })
-
   return successResponse(res, 200, 'News fetched', news)
 }
 
@@ -15,31 +30,38 @@ export const getAllNews = async (req, res) => {
 export const getNews = async (req, res) => {
   const news = await News.findById(req.params.id)
     .populate('author', 'name profileImage')
-
   if (!news) {
     return errorResponse(res, 404, 'News not found')
   }
-
   news.views += 1
   await news.save()
-
   return successResponse(res, 200, 'News fetched', news)
 }
 
 // POST create news — admin only
+
 export const createNews = async (req, res) => {
+  console.log('REQ.FILE:', req.file)
+  console.log('REQ.BODY:', req.body)
+
   const { title, content, excerpt, tags } = req.body
 
-  const image = req.file
-    ? req.file.path
-    : req.body.image || ''
+  let image = req.body.image || ''
+  if (req.file) {
+    console.log('ATTEMPTING CLOUDINARY UPLOAD...')
+    try {
+      const result = await uploadToCloudinary(req.file.buffer)
+      console.log('CLOUDINARY RESULT:', result)
+      image = result.secure_url
+    } catch (uploadErr) {
+      console.log('CLOUDINARY UPLOAD FAILED:', uploadErr)
+    }
+  }
+
+  console.log('FINAL IMAGE VALUE:', image)
 
   const news = await News.create({
-    title,
-    content,
-    excerpt,
-    image,
-    tags,
+    title, content, excerpt, image, tags,
     author: req.user._id,
     publishedAt: new Date(),
   })
@@ -50,35 +72,20 @@ export const createNews = async (req, res) => {
 // PUT update news — admin only
 export const updateNews = async (req, res) => {
   const news = await News.findById(req.params.id)
-
   if (!news) {
     return errorResponse(res, 404, 'News not found')
   }
 
   if (req.file) {
-    // delete old Cloudinary image
-    if (news.image) {
-      try {
-        const publicId = news.image
-          .split('/')
-          .slice(-2)
-          .join('/')
-          .split('.')[0]
-
-        await cloudinary.uploader.destroy(publicId)
-      } catch (error) {
-        console.log('Old image delete failed:', error.message)
-      }
-    }
-
-    // save new image URL
-    req.body.image = req.file.path
+    await deleteOldImage(news.image)
+    const result = await uploadToCloudinary(req.file.buffer)
+    req.body.image = result.secure_url
   }
 
   const updated = await News.findByIdAndUpdate(
     req.params.id,
     req.body,
-    { new: true }
+    { returnDocument: 'after' }
   )
 
   return successResponse(res, 200, 'News updated', updated)
@@ -86,28 +93,13 @@ export const updateNews = async (req, res) => {
 
 // DELETE news — admin only
 export const deleteNews = async (req, res) => {
-  const news = await News.findById(req.params.id)
-
+  const news = await News.findByIdAndDelete(req.params.id)
   if (!news) {
     return errorResponse(res, 404, 'News not found')
   }
 
-  // delete image from Cloudinary
-  if (news.image) {
-    try {
-      const publicId = news.image
-        .split('/')
-        .slice(-2)
-        .join('/')
-        .split('.')[0]
-
-      await cloudinary.uploader.destroy(publicId)
-    } catch (error) {
-      console.log('Image delete failed:', error.message)
-    }
-  }
-
-  await news.deleteOne()
+  // delete image file when news is deleted
+  await deleteOldImage(news.image)
 
   return successResponse(res, 200, 'News deleted', {})
 }
@@ -115,13 +107,10 @@ export const deleteNews = async (req, res) => {
 // PUT like a news post — any logged in user
 export const likeNews = async (req, res) => {
   const news = await News.findById(req.params.id)
-
   if (!news) {
     return errorResponse(res, 404, 'News not found')
   }
-
   news.likes += 1
   await news.save()
-
   return successResponse(res, 200, 'News liked', news)
 }
