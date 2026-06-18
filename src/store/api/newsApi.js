@@ -3,39 +3,36 @@ import { baseApi } from './baseApi'
 export const newsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
 
-    // GET all news
     getAllNews: builder.query({
       query: () => '/news',
       providesTags: ['News'],
     }),
 
-    // GET single news
     getNews: builder.query({
       query: (id) => `/news/${id}`,
       providesTags: ['News'],
     }),
 
-    // CREATE news with image
+    // CREATE news with image URL
     createNews: builder.mutation({
-      query: (formData) => ({
+      query: (newsData) => ({
         url: '/news',
         method: 'POST',
-        body: formData,
+        body: newsData,
       }),
       invalidatesTags: ['News'],
     }),
 
-    // UPDATE news with image
+    // UPDATE news with image URL
     updateNews: builder.mutation({
-      query: ({ id, formData }) => ({
+      query: ({ id, newsData }) => ({
         url: `/news/${id}`,
         method: 'PUT',
-        body: formData,
+        body: newsData,
       }),
       invalidatesTags: ['News'],
     }),
 
-    // DELETE news
     deleteNews: builder.mutation({
       query: (id) => ({
         url: `/news/${id}`,
@@ -44,7 +41,6 @@ export const newsApi = baseApi.injectEndpoints({
       invalidatesTags: ['News'],
     }),
 
-    // LIKE news
     likeNews: builder.mutation({
       query: (id) => ({
         url: `/news/${id}/like`,

@@ -8,7 +8,6 @@ import {
 } from '../../store/api/doctorApi'
 import { useGetDepartmentsQuery } from '../../store/api/departmentApi'
 import { useGetAllUsersQuery } from '../../store/api/userApi'
-import Modal from '../../components/admin/Modal.jsx'
 import ConfirmDialog from '../../components/admin/ConfirmDialog'
 import Avatar from '../../components/home/Avatar.jsx'
 
@@ -23,6 +22,7 @@ const emptyForm = {
   experience: 0,
   consultFee: 0,
   bio: '',
+  image: '', // plain URL string
   socialLinks: { facebook: '', twitter: '', linkedin: '' },
   availability: [],
 }
@@ -33,8 +33,6 @@ const AdminDoctors = () => {
   const [editingDoctor, setEditingDoctor] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [form, setForm] = useState(emptyForm)
-  const [imageFile, setImageFile] = useState(null)
-  const [imagePreview, setImagePreview] = useState('')
   const [error, setError] = useState('')
 
   const { data: doctorsData, isLoading } = useGetDoctorsQuery()
@@ -49,7 +47,6 @@ const AdminDoctors = () => {
   const departments = departmentsData?.data || []
   const allUsers = usersData?.data || []
 
-  // users with role doctor who don't already have a doctor profile (unless editing)
   const doctorUserIds = doctors.map((d) => d.userId?._id)
   const availableDoctorUsers = allUsers.filter(
     (u) => u.role === 'doctor' && (!doctorUserIds.includes(u._id) || editingDoctor?.userId?._id === u._id)
@@ -64,8 +61,6 @@ const AdminDoctors = () => {
   const openAddModal = () => {
     setEditingDoctor(null)
     setForm(emptyForm)
-    setImageFile(null)
-    setImagePreview('')
     setError('')
     setIsModalOpen(true)
   }
@@ -80,6 +75,7 @@ const AdminDoctors = () => {
       experience: doctor.experience || 0,
       consultFee: doctor.consultFee || 0,
       bio: doctor.bio || '',
+      image: doctor.userId?.profileImage || '', // pre-fill existing image URL
       socialLinks: {
         facebook: doctor.socialLinks?.facebook || '',
         twitter: doctor.socialLinks?.twitter || '',
@@ -87,18 +83,8 @@ const AdminDoctors = () => {
       },
       availability: doctor.availability || [],
     })
-    setImageFile(null)
-    setImagePreview(doctor.userId?.profileImage || '')
     setError('')
     setIsModalOpen(true)
-  }
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      setImageFile(file)
-      setImagePreview(URL.createObjectURL(file))
-    }
   }
 
   // availability helpers
@@ -125,46 +111,19 @@ const AdminDoctors = () => {
     })
   }
 
-  const buildPayload = () => {
-    const payload = {
-      ...form,
-      qualifications: form.qualifications.split(',').map((q) => q.trim()).filter(Boolean),
-      experience: Number(form.experience),
-      consultFee: Number(form.consultFee),
-    }
-    return payload
-  }
-
-  const buildFormDataForUpdate = () => {
-    const fd = new FormData()
-    const payload = buildPayload()
-    Object.entries(payload).forEach(([key, value]) => {
-      if (typeof value === 'object') {
-        fd.append(key, JSON.stringify(value))
-      } else {
-        fd.append(key, value)
-      }
-    })
-    if (imageFile) fd.append('image', imageFile)
-    return fd
-  }
+  const buildPayload = () => ({
+    ...form,
+    qualifications: form.qualifications.split(',').map((q) => q.trim()).filter(Boolean),
+    experience: Number(form.experience),
+    consultFee: Number(form.consultFee),
+  })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     try {
       if (editingDoctor) {
-        const payload = buildPayload()
-
-        // if there's a new image, upload it separately first
-        if (imageFile) {
-          const fd = new FormData()
-          fd.append('image', imageFile)
-          await updateDoctor({ id: editingDoctor._id, body: fd }).unwrap()
-        }
-
-        // send data as clean JSON
-        await updateDoctor({ id: editingDoctor._id, body: payload }).unwrap()
+        await updateDoctor({ id: editingDoctor._id, doctorData: buildPayload() }).unwrap()
       } else {
         await createDoctor(buildPayload()).unwrap()
       }
@@ -266,7 +225,7 @@ const AdminDoctors = () => {
         </table>
       </div>
 
-      {/* add/edit modal — wider for doctors */}
+      {/* add/edit modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -367,6 +326,21 @@ const AdminDoctors = () => {
                 </div>
               </div>
 
+              {/* image URL — replaces file upload */}
+              <div>
+                <label className="text-sm font-medium text-gray-700">Profile Image URL</label>
+                <input
+                  type="url"
+                  placeholder="https://example.com/image.jpg"
+                  value={form.image}
+                  onChange={(e) => setForm({ ...form, image: e.target.value })}
+                  className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-cyan transition"
+                />
+                {form.image && (
+                  <img src={form.image} alt="preview" className="w-16 h-16 object-cover rounded-full mt-2" />
+                )}
+              </div>
+
               <div>
                 <label className="text-sm font-medium text-gray-700">Bio</label>
                 <textarea
@@ -441,22 +415,6 @@ const AdminDoctors = () => {
                   })}
                 </div>
               </div>
-
-              {/* image — only on edit since image is tied to user profile */}
-              {editingDoctor && (
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Profile Image</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="w-full mt-1 text-sm"
-                  />
-                  {imagePreview && (
-                    <img src={imagePreview} alt="preview" className="w-16 h-16 object-cover rounded-full mt-2" />
-                  )}
-                </div>
-              )}
 
               <button
                 type="submit"
