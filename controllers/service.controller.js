@@ -3,18 +3,14 @@ import { successResponse, errorResponse } from '../utils/apiResponse.js'
 import fs from 'fs'
 import path from 'path'
 
-import cloudinary from '../config/cloudinary.js'
-
-const deleteOldImage = async (imageUrl) => {
-  if (!imageUrl || !imageUrl.includes('cloudinary')) return
-  // extract public_id from url: .../meddical/abc123.jpg → meddical/abc123
-  const parts = imageUrl.split('/')
-  const filename = parts[parts.length - 1].split('.')[0]
-  const publicId = `meddical/${filename}`
-  try {
-    await cloudinary.uploader.destroy(publicId)
-  } catch (err) {
-    console.log('Cloudinary delete error:', err.message)
+// helper to delete old image file
+const deleteOldImage = (imageUrl) => {
+  if (!imageUrl) return
+  const filename = imageUrl.split('/uploads/')[1]
+  if (!filename) return
+  const filepath = path.join('uploads', filename)
+  if (fs.existsSync(filepath)) {
+    fs.unlinkSync(filepath)
   }
 }
 
@@ -45,7 +41,7 @@ export const createService = async (req, res) => {
   }
 
   const image = req.file
-    ? req.file.path
+    ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
     : req.body.image || ''
 
   const service = await Service.create({ name, description, icon, image })
@@ -61,7 +57,7 @@ export const updateService = async (req, res) => {
 
   if (req.file) {
     // delete old image before saving new one
-    await deleteOldImage(service.image)
+    deleteOldImage(service.image)
     req.body.image = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
   }
 
@@ -82,7 +78,7 @@ export const deleteService = async (req, res) => {
   }
 
   // delete image file when service is deleted
-  await deleteOldImage(service.image)
+  deleteOldImage(service.image)
 
   return successResponse(res, 200, 'Service deleted', {})
 }

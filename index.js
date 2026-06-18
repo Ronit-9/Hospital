@@ -18,7 +18,8 @@ import hospitalsettingsRoutes from './routes/hospitalsettingsRouter.js'
 import serviceRoutes from './routes/serviceRouter.js'
 import newsRoutes from './routes/newsRouter.js'
 import contactRoutes from './routes/contactRouter.js'
-
+import fs from 'fs'
+import path from 'path'
 const app = express()
 
 // connect to MongoDB
@@ -42,8 +43,7 @@ app.get('/', (req, res) => {
   res.send('Hospital Management API is running...')
 })
 
-// ✅ remove local uploads serving if using Cloudinary
-// app.use('/uploads', express.static('uploads'))
+app.use('/uploads', express.static('uploads'))
 
 // routes
 app.use('/api/auth', authRoutes)
