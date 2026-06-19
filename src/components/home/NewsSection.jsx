@@ -16,19 +16,19 @@ const NewsSection = () => {
   }
 
   return (
-    <section className="py-16 px-6 bg-gray-50">
+    <section className="py-12 md:py-16 px-4 sm:px-6 bg-gray-50">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
+        <div className="text-center mb-10 md:mb-12">
           <p className="text-cyan text-sm font-semibold tracking-widest uppercase mb-2">
             Better Information, Better Health
           </p>
-          <h2 className="text-4xl font-bold text-navy font-serif">News</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-navy font-serif">News</h2>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {news.slice(0, 4).map((item) => (
             <Link to={`/news/${item._id}`} key={item._id} className="flex gap-4 items-start group">
-              <div className="w-32 h-24 bg-gray-300 rounded overflow-hidden flex-shrink-0">
+              <div className="w-24 h-20 sm:w-32 sm:h-24 bg-gray-300 rounded overflow-hidden flex-shrink-0">
                 {item.image
                   ? <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
                   : <div className="w-full h-full bg-navy/20" />
@@ -58,7 +58,7 @@ const NewsSection = () => {
 
           {news.length === 0 && [1, 2, 3, 4].map((i) => (
             <div key={i} className="flex gap-4 items-start">
-              <div className="w-32 h-24 bg-gray-300 rounded flex-shrink-0" />
+              <div className="w-24 h-20 sm:w-32 sm:h-24 bg-gray-300 rounded flex-shrink-0" />
               <div>
                 <p className="text-cyan text-xs mb-1">Monday 05, September 2021 | By Author</p>
                 <h4 className="text-navy font-medium text-sm mb-2">This Article's Title goes Here, but not too long.</h4>

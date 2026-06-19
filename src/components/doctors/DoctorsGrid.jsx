@@ -16,11 +16,11 @@ const DoctorsGrid = () => {
   )
 
   return (
-    <section className="py-16 px-6 bg-white">
+    <section className="py-12 md:py-16 px-4 sm:px-6 bg-white">
       <div className="max-w-7xl mx-auto">
 
         {/* search bar */}
-        <div className="flex justify-center mb-10">
+        <div className="flex justify-center mb-8 md:mb-10">
           <div className="relative w-full max-w-md">
             <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
             <input
@@ -54,14 +54,14 @@ const DoctorsGrid = () => {
         )}
 
         {/* doctors grid */}
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((doctor) => (
             <div
               key={doctor._id}
               className="rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition"
             >
               {/* image */}
-              <div className="h-72 bg-gray-100 flex items-center justify-center overflow-hidden">
+              <div className="h-56 sm:h-64 lg:h-72 bg-gray-100 flex items-center justify-center overflow-hidden">
                 {doctor.userId?.profileImage ? (
                   <img
                     src={doctor.userId.profileImage}
@@ -112,7 +112,7 @@ const DoctorsGrid = () => {
 
               {/* view profile button */}
               <Link
-                to={`/doctors/${doctor._id}`}
+
                 className="block bg-navy text-white text-center py-3 text-sm hover:bg-navy-light transition"
               >
                 View Profile

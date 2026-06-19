@@ -16,24 +16,24 @@ const SpecialtiesSection = () => {
   const specialties = departmentsData?.data?.length > 0 ? departmentsData.data : fallback
 
   return (
-    <section className="py-16 px-6 bg-gray-50">
+    <section className="py-12 md:py-16 px-4 sm:px-6 bg-gray-50">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
+        <div className="text-center mb-10 md:mb-12">
           <p className="text-cyan text-sm font-semibold tracking-widest uppercase mb-2">
             Always Caring
           </p>
-          <h2 className="text-4xl font-bold text-navy font-serif">Our Specialties</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-navy font-serif">Our Specialties</h2>
         </div>
-        <div className="grid grid-cols-4 border-l border-t border-gray-200">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 border-l border-t border-gray-200">
           {specialties.map((dept, i) => (
             <Link
               to={`/doctors?department=${dept._id}`}
               key={dept._id}
-              className={`p-8 text-center border-r border-b border-gray-200 hover:bg-navy hover:text-white transition group ${i === 1 ? 'bg-navy text-white' : 'bg-white text-navy'
+              className={`p-5 sm:p-8 text-center border-r border-b border-gray-200 hover:bg-navy hover:text-white transition group ${i === 1 ? 'bg-navy text-white' : 'bg-white text-navy'
                 }`}
             >
-              <GiHeartOrgan className={`mx-auto mb-3 text-3xl ${i === 1 ? 'text-white' : 'text-cyan group-hover:text-white'}`} />
-              <p className="text-sm font-medium">{dept.name}</p>
+              <GiHeartOrgan className={`mx-auto mb-2 sm:mb-3 text-2xl sm:text-3xl ${i === 1 ? 'text-white' : 'text-cyan group-hover:text-white'}`} />
+              <p className="text-xs sm:text-sm font-medium">{dept.name}</p>
             </Link>
           ))}
         </div>

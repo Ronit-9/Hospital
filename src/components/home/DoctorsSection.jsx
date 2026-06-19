@@ -8,16 +8,16 @@ const DoctorsSection = () => {
   const doctors = doctorsData?.data || []
 
   return (
-    <section className="py-16 px-6 bg-white">
+    <section className="py-12 md:py-16 px-4 sm:px-6 bg-white">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
+        <div className="text-center mb-10 md:mb-12">
           <p className="text-cyan text-sm font-semibold tracking-widest uppercase mb-2">
             Trusted Care
           </p>
-          <h2 className="text-4xl font-bold text-navy font-serif">Our Doctors</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-navy font-serif">Our Doctors</h2>
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {doctors.slice(0, 3).map((doctor) => (
             <div key={doctor._id} className="rounded-xl overflow-hidden shadow-sm border border-gray-100">
               <div className="h-72 bg-gray-100 flex items-center justify-center overflow-hidden">

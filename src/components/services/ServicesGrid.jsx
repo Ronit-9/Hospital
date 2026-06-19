@@ -14,13 +14,13 @@ const ServicesGrid = () => {
   }
 
   return (
-    <section className="py-16 px-6 bg-white">
+    <section className="py-12 md:py-16 px-4 sm:px-6 bg-white">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service, i) => (
             <div key={service._id} className="border border-gray-100 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition group">
               {/* image */}
-              <div className="h-52 bg-gray-100 overflow-hidden relative">
+              <div className="h-44 sm:h-52 bg-gray-100 overflow-hidden relative">
                 {service.image ? (
                   <img
                     src={service.image}
@@ -57,7 +57,7 @@ const ServicesGrid = () => {
           {/* fallback */}
           {services.length === 0 && [1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="border border-gray-100 rounded-lg overflow-hidden shadow-sm">
-              <div className="h-52 bg-gray-200 flex items-center justify-center">
+              <div className="h-44 sm:h-52 bg-gray-200 flex items-center justify-center">
                 <GiHeartOrgan className="text-gray-400 text-5xl" />
               </div>
               <div className="p-5">

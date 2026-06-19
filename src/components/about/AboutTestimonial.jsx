@@ -27,7 +27,7 @@ const AboutTestimonial = () => {
 
   return (
     <section
-      className="relative py-20 px-6 overflow-hidden"
+      className="relative py-14 sm:py-16 md:py-20 px-4 sm:px-6 overflow-hidden"
       style={{
         backgroundImage: `url(${aboutBanner})`,
         backgroundSize: 'cover',
@@ -39,10 +39,10 @@ const AboutTestimonial = () => {
 
       <div className="relative max-w-2xl mx-auto text-center text-white">
         {/* quote icon */}
-        <FaQuoteRight className="text-cyan text-4xl mx-auto mb-6" />
+        <FaQuoteRight className="text-cyan text-3xl sm:text-4xl mx-auto mb-6" />
 
         {/* quote text */}
-        <p className="text-gray-200 text-sm leading-relaxed mb-6 min-h-[80px] transition-all">
+        <p className="text-gray-200 text-sm leading-relaxed mb-6 min-h-[100px] sm:min-h-[80px] transition-all">
           {testimonials[active].quote}
         </p>
 

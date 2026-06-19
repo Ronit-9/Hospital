@@ -20,18 +20,18 @@ const ServiceDetail = () => {
   }
 
   return (
-    <section className="py-16 px-6 bg-white">
-      <div className="max-w-7xl mx-auto flex gap-8">
+    <section className="py-12 md:py-16 px-4 sm:px-6 bg-white">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 lg:gap-8">
 
         {/* left sidebar */}
-        <div className="w-52 flex-shrink-0">
+        <div className="w-full lg:w-52 flex-shrink-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1">
           {allServices.map((s) => (
             <Link
               key={s._id}
               to={`/services/${s._id}`}
-              className={`flex items-center gap-3 p-4 border-b transition ${s._id === id
-                  ? 'bg-navy text-white'
-                  : 'bg-white text-navy hover:bg-bg-light'
+              className={`flex items-center gap-3 p-4 border-b border-r lg:border-r-0 transition ${s._id === id
+                ? 'bg-navy text-white'
+                : 'bg-white text-navy hover:bg-bg-light'
                 }`}
             >
               <GiHeartOrgan className={`text-lg flex-shrink-0 ${s._id === id ? 'text-white' : 'text-cyan'}`} />
@@ -43,7 +43,7 @@ const ServiceDetail = () => {
         {/* right content */}
         <div className="flex-1">
           {/* main image */}
-          <div className="h-80 bg-gray-100 rounded-lg overflow-hidden mb-8">
+          <div className="h-56 sm:h-72 lg:h-80 bg-gray-100 rounded-lg overflow-hidden mb-6 lg:mb-8">
             {service?.image ? (
               <img
                 src={service.image}
@@ -58,12 +58,12 @@ const ServiceDetail = () => {
           </div>
 
           {/* title */}
-          <h2 className="text-2xl font-bold text-navy mb-6">
+          <h2 className="text-xl md:text-2xl font-bold text-navy mb-6">
             A passion for putting patients first
           </h2>
 
           {/* feature bullets */}
-          <div className="grid grid-cols-3 gap-3 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
             {features.map((item) => (
               <div key={item} className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-cyan flex-shrink-0" />

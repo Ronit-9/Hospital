@@ -28,16 +28,16 @@ const ContactForm = () => {
   }
 
   return (
-    <section className="py-16 px-6 bg-white">
+    <section className="py-10 sm:py-12 md:py-16 px-4 sm:px-6 bg-white">
       <div className="max-w-7xl mx-auto">
-        <div className="flex gap-8">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
 
           {/* left form */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <p className="text-cyan text-sm font-semibold tracking-widest uppercase mb-1">
               Get In Touch
             </p>
-            <h2 className="text-3xl font-bold text-navy font-serif mb-6">Contact</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-navy font-serif mb-6">Contact</h2>
 
             {success ? (
               <div className="bg-green-50 border border-green-200 text-green-700 p-6 rounded-lg text-center">
@@ -58,12 +58,12 @@ const ContactForm = () => {
                     {error}
                   </div>
                 )}
-                <div className="grid grid-cols-2 gap-0 border border-gray-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 border border-gray-200">
                   <input
                     placeholder="Name"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="p-4 border-b border-r border-gray-200 text-sm outline-none focus:bg-bg-light"
+                    className="p-4 border-b sm:border-r border-gray-200 text-sm outline-none focus:bg-bg-light"
                   />
                   <input
                     placeholder="Email"
@@ -77,20 +77,20 @@ const ContactForm = () => {
                     value={form.subject}
                     onChange={(e) => setForm({ ...form, subject: e.target.value })}
                     rows={1}
-                    className="col-span-2 p-4 border-b border-gray-200 text-sm outline-none focus:bg-bg-light resize-none"
+                    className="col-span-1 sm:col-span-2 p-4 border-b border-gray-200 text-sm outline-none focus:bg-bg-light resize-none"
                   />
                   <textarea
                     placeholder="Message"
                     value={form.message}
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
                     rows={5}
-                    className="col-span-2 p-4 border-b border-gray-200 text-sm outline-none focus:bg-bg-light resize-none"
+                    className="col-span-1 sm:col-span-2 p-4 border-b border-gray-200 text-sm outline-none focus:bg-bg-light resize-none"
                   />
                 </div>
                 <button
                   onClick={handleSubmit}
                   disabled={isLoading}
-                  className="w-full bg-bg-light text-navy py-4 font-semibold tracking-widest uppercase text-sm hover:bg-cyan hover:text-white transition mt-0 border border-t-0 border-gray-200 disabled:opacity-50"
+                  className="w-full bg-bg-light text-navy py-4 font-semibold tracking-widest uppercase text-sm hover:bg-cyan hover:text-white transition border border-t-0 border-gray-200 disabled:opacity-50"
                 >
                   {isLoading ? 'Sending...' : 'Submit'}
                 </button>
@@ -99,11 +99,11 @@ const ContactForm = () => {
           </div>
 
           {/* right contact cards */}
-          <div className="w-72 flex-shrink-0 grid grid-cols-2 gap-4 content-start">
+          <div className="w-full lg:w-72 flex-shrink-0 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 gap-4 content-start">
             {contacts.map((item, i) => (
               <div
                 key={item.title}
-                className={`p-5 rounded-lg ${i === 1 ? 'bg-navy text-white' : 'bg-bg-light text-navy'}`}
+                className={`p-4 sm:p-5 rounded-lg ${i === 1 ? 'bg-navy text-white' : 'bg-bg-light text-navy'}`}
               >
                 <div className={`mb-3 ${i === 1 ? 'text-white' : 'text-navy'}`}>
                   {item.icon}
@@ -112,13 +112,14 @@ const ContactForm = () => {
                   {item.title}
                 </h4>
                 {item.lines.map((line) => (
-                  <p key={line} className={`text-xs ${i === 1 ? 'text-gray-300' : 'text-gray-600'}`}>
+                  <p key={line} className={`text-xs leading-relaxed ${i === 1 ? 'text-gray-300' : 'text-gray-600'}`}>
                     {line}
                   </p>
                 ))}
               </div>
             ))}
           </div>
+
         </div>
       </div>
     </section>

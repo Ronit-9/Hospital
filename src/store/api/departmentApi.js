@@ -2,36 +2,49 @@ import { baseApi } from './baseApi'
 
 export const departmentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+
+    // ─── Public ───────────────────────────────────────────
+
     getDepartments: builder.query({
       query: () => '/departments',
       providesTags: ['Department'],
     }),
     getDepartment: builder.query({
       query: (id) => `/departments/${id}`,
-      providesTags: ['Department'],
+      providesTags: (result, error, id) => [{ type: 'Department', id }],
     }),
+
+    // ─── Admin ────────────────────────────────────────────
+
+    // body shape: { name, description, icon, image: "https://..." }
     createDepartment: builder.mutation({
-      query: (data) => ({
+      query: (departmentData) => ({
         url: '/departments',
         method: 'POST',
-        body: data,
+        body: departmentData,
       }),
       invalidatesTags: ['Department'],
     }),
     updateDepartment: builder.mutation({
-      query: ({ id, ...data }) => ({
+      query: ({ id, departmentData }) => ({
         url: `/departments/${id}`,
         method: 'PUT',
-        body: data,
+        body: departmentData, // pass image inside departmentData: { ...fields, image: "https://..." }
       }),
-      invalidatesTags: ['Department'],
+      invalidatesTags: (result, error, { id }) => [
+        { type: 'Department', id },
+        'Department',
+      ],
     }),
     deleteDepartment: builder.mutation({
       query: (id) => ({
         url: `/departments/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Department'],
+      invalidatesTags: (result, error, id) => [
+        { type: 'Department', id },
+        'Department',
+      ],
     }),
   }),
 })

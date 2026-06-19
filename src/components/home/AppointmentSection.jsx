@@ -38,7 +38,7 @@ const AppointmentSection = () => {
   }
 
   return (
-    <section className="relative py-20 px-6 overflow-hidden">
+    <section className="relative py-12 md:py-20 px-4 sm:px-6 overflow-hidden">
       <div
         className="absolute inset-0"
         style={{
@@ -48,16 +48,16 @@ const AppointmentSection = () => {
           filter: 'brightness(0.4)',
         }}
       />
-      <div className="relative max-w-7xl mx-auto flex items-center gap-16">
-        <div className="flex-1 text-white">
-          <h2 className="text-4xl font-bold text-cyan mb-4">Book an Appointment</h2>
+      <div className="relative max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+        <div className="flex-1 text-white text-center lg:text-left">
+          <h2 className="text-3xl md:text-4xl font-bold text-cyan mb-4">Book an Appointment</h2>
           <p className="text-gray-300 leading-relaxed text-sm">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat
             scelerisque tortor ornare ornare. Convallis felis vitae tortor augue.
           </p>
         </div>
 
-        <div className="w-[500px] flex-shrink-0 bg-navy">
+        <div className="w-full max-w-[500px] lg:w-[500px] flex-shrink-0 bg-navy">
           {success ? (
             <div className="p-8 text-center text-white">
               <div className="text-5xl mb-4">✅</div>
@@ -80,12 +80,12 @@ const AppointmentSection = () => {
                   Admin cannot book appointments
                 </div>
               )}
-              <div className="grid grid-cols-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2">
                 <input
                   placeholder="Name"
                   value={user?.name || ''}
                   readOnly
-                  className="bg-navy text-white border-b border-r border-navy-light p-4 placeholder-gray-400 text-sm outline-none"
+                  className="bg-navy text-white border-b sm:border-r border-navy-light p-4 placeholder-gray-400 text-sm outline-none"
                 />
                 <select
                   value={form.type}
@@ -101,7 +101,7 @@ const AppointmentSection = () => {
                   value={form.date}
                   onChange={(e) => setForm({ ...form, date: e.target.value })}
                   disabled={!canBook}
-                  className="bg-navy text-gray-300 border-b border-r border-navy-light p-4 text-sm outline-none"
+                  className="bg-navy text-gray-300 border-b sm:border-r border-navy-light p-4 text-sm outline-none"
                 />
                 <select
                   value={form.timeSlot}
@@ -118,7 +118,7 @@ const AppointmentSection = () => {
                   value={form.doctorId}
                   onChange={(e) => setForm({ ...form, doctorId: e.target.value })}
                   disabled={!canBook}
-                  className="bg-navy text-gray-300 border-b border-r border-navy-light p-4 text-sm outline-none"
+                  className="bg-navy text-gray-300 border-b sm:border-r border-navy-light p-4 text-sm outline-none"
                 >
                   <option value="">Doctor</option>
                   {doctors.map(d => (
@@ -140,7 +140,7 @@ const AppointmentSection = () => {
                   onChange={(e) => setForm({ ...form, symptoms: e.target.value })}
                   rows={4}
                   disabled={!canBook}
-                  className="col-span-2 bg-navy text-white border-b border-navy-light p-4 placeholder-gray-400 text-sm outline-none resize-none"
+                  className="col-span-1 sm:col-span-2 bg-navy text-white border-b border-navy-light p-4 placeholder-gray-400 text-sm outline-none resize-none"
                 />
               </div>
               <button

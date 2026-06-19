@@ -19,9 +19,7 @@ const AdminDepartments = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingDept, setEditingDept] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
-  const [form, setForm] = useState({ name: '', description: '', icon: 'GiHeartOrgan' })
-  const [imageFile, setImageFile] = useState(null)
-  const [imagePreview, setImagePreview] = useState('')
+  const [form, setForm] = useState({ name: '', description: '', icon: 'GiHeartOrgan', image: '' })
   const [error, setError] = useState('')
 
   const { data, isLoading } = useGetDepartmentsQuery()
@@ -36,48 +34,31 @@ const AdminDepartments = () => {
 
   const openAddModal = () => {
     setEditingDept(null)
-    setForm({ name: '', description: '', icon: 'GiHeartOrgan' })
-    setImageFile(null)
-    setImagePreview('')
+    setForm({ name: '', description: '', icon: 'GiHeartOrgan', image: '' })
     setError('')
     setIsModalOpen(true)
   }
 
   const openEditModal = (dept) => {
     setEditingDept(dept)
-    setForm({ name: dept.name, description: dept.description || '', icon: dept.icon || 'GiHeartOrgan' })
-    setImageFile(null)
-    setImagePreview(dept.image || '')
+    setForm({
+      name: dept.name,
+      description: dept.description || '',
+      icon: dept.icon || 'GiHeartOrgan',
+      image: dept.image || '',
+    })
     setError('')
     setIsModalOpen(true)
-  }
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      setImageFile(file)
-      setImagePreview(URL.createObjectURL(file))
-    }
-  }
-
-  const buildFormData = () => {
-    const fd = new FormData()
-    fd.append('name', form.name)
-    fd.append('description', form.description)
-    fd.append('icon', form.icon)
-    if (imageFile) fd.append('image', imageFile)
-    return fd
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     try {
-      const fd = buildFormData()
       if (editingDept) {
-        await updateDepartment({ id: editingDept._id, body: fd }).unwrap()
+        await updateDepartment({ id: editingDept._id, departmentData: form }).unwrap()
       } else {
-        await createDepartment(fd).unwrap()
+        await createDepartment(form).unwrap()
       }
       setIsModalOpen(false)
     } catch (err) {
@@ -218,15 +199,16 @@ const AdminDepartments = () => {
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-700">Image</label>
+            <label className="text-sm font-medium text-gray-700">Image URL</label>
             <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="w-full mt-1 text-sm"
+              type="url"
+              placeholder="https://example.com/image.jpg"
+              value={form.image}
+              onChange={(e) => setForm({ ...form, image: e.target.value })}
+              className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-cyan transition"
             />
-            {imagePreview && (
-              <img src={imagePreview} alt="preview" className="w-20 h-20 object-cover rounded mt-2" />
+            {form.image && (
+              <img src={form.image} alt="preview" className="w-20 h-20 object-cover rounded mt-2" />
             )}
           </div>
 

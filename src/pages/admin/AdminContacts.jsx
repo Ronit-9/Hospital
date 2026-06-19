@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MdDelete, MdSearch, MdMarkEmailRead, MdEmail, MdMarkEmailUnread } from 'react-icons/md'
+import { MdDelete, MdSearch, MdMarkEmailRead, MdEmail } from 'react-icons/md'
 import {
   useGetAllMessagesQuery,
   useMarkAsReadMutation,
@@ -20,30 +20,22 @@ const AdminContacts = () => {
   const messages = data?.data || []
   const unreadCount = messages.filter((m) => !m.isRead).length
 
-  const filtered = messages.filter(
-    (m) =>
-      m.name.toLowerCase().includes(search.toLowerCase()) ||
-      m.email.toLowerCase().includes(search.toLowerCase()) ||
-      m.subject.toLowerCase().includes(search.toLowerCase())
+  const filtered = messages.filter((m) =>
+    m.name.toLowerCase().includes(search.toLowerCase()) ||
+    m.email.toLowerCase().includes(search.toLowerCase()) ||
+    m.subject.toLowerCase().includes(search.toLowerCase())
   )
 
   const handleMarkAsRead = async (msg) => {
     if (msg.isRead) return
-    try {
-      await markAsRead(msg._id).unwrap()
-    } catch (err) {
-      setError(err.data?.message || 'Could not mark as read')
-    }
+    try { await markAsRead(msg._id).unwrap() }
+    catch (err) { setError(err.data?.message || 'Could not mark as read') }
   }
 
   const handleView = async (msg) => {
     setViewTarget(msg)
     if (!msg.isRead) {
-      try {
-        await markAsRead(msg._id).unwrap()
-      } catch {
-        // silently fail — message still shows
-      }
+      try { await markAsRead(msg._id).unwrap() } catch { }
     }
   }
 
@@ -58,7 +50,7 @@ const AdminContacts = () => {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-navy">Manage Messages</h1>
@@ -77,7 +69,7 @@ const AdminContacts = () => {
         <div className="bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4">{error}</div>
       )}
 
-      <div className="relative w-72 mb-5">
+      <div className="relative w-full sm:w-72 mb-5">
         <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
           type="text"
@@ -88,8 +80,8 @@ const AdminContacts = () => {
         />
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-white rounded-lg border border-gray-100 overflow-x-auto">
+        <table className="w-full text-sm min-w-[540px]">
           <thead>
             <tr className="bg-gray-50 text-left text-gray-500 text-xs uppercase tracking-wide">
               <th className="px-5 py-3">Status</th>
@@ -102,64 +94,30 @@ const AdminContacts = () => {
           </thead>
           <tbody>
             {isLoading && (
-              <tr>
-                <td colSpan={6} className="text-center py-10 text-gray-400">
-                  Loading...
-                </td>
-              </tr>
+              <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading...</td></tr>
             )}
             {!isLoading && filtered.length === 0 && (
-              <tr>
-                <td colSpan={6} className="text-center py-10 text-gray-400">
-                  No messages found
-                </td>
-              </tr>
+              <tr><td colSpan={6} className="text-center py-10 text-gray-400">No messages found</td></tr>
             )}
             {filtered.map((item) => (
-              <tr
-                key={item._id}
-                className={`border-t border-gray-100 hover:bg-gray-50 transition ${!item.isRead ? 'bg-cyan/5' : ''
-                  }`}
-              >
+              <tr key={item._id} className={`border-t border-gray-100 hover:bg-gray-50 transition ${!item.isRead ? 'bg-cyan/5' : ''}`}>
                 <td className="px-5 py-3">
-                  <span
-                    className={`inline-block w-2 h-2 rounded-full ${item.isRead ? 'bg-gray-300' : 'bg-cyan'
-                      }`}
-                    title={item.isRead ? 'Read' : 'Unread'}
-                  />
+                  <span className={`inline-block w-2 h-2 rounded-full ${item.isRead ? 'bg-gray-300' : 'bg-cyan'}`} />
                 </td>
                 <td className="px-5 py-3 font-medium text-navy">{item.name}</td>
                 <td className="px-5 py-3 text-gray-500">{item.email}</td>
                 <td className="px-5 py-3 text-gray-700 max-w-xs truncate">{item.subject}</td>
-                <td className="px-5 py-3 text-gray-500 text-xs">
-                  {new Date(item.createdAt).toLocaleDateString()}
-                </td>
+                <td className="px-5 py-3 text-gray-500 text-xs">{new Date(item.createdAt).toLocaleDateString()}</td>
                 <td className="px-5 py-3 text-right">
-                  {/* View */}
-                  <button
-                    onClick={() => handleView(item)}
-                    className="text-gray-400 hover:text-cyan transition mr-3"
-                    title="View message"
-                  >
+                  <button onClick={() => handleView(item)} className="text-gray-400 hover:text-cyan transition mr-3" title="View">
                     <MdEmail size={18} />
                   </button>
-                  {/* Mark as read */}
                   {!item.isRead && (
-                    <button
-                      onClick={() => handleMarkAsRead(item)}
-                      disabled={isMarking}
-                      className="text-gray-400 hover:text-green-500 transition mr-3"
-                      title="Mark as read"
-                    >
+                    <button onClick={() => handleMarkAsRead(item)} disabled={isMarking} className="text-gray-400 hover:text-green-500 transition mr-3" title="Mark as read">
                       <MdMarkEmailRead size={18} />
                     </button>
                   )}
-                  {/* Delete */}
-                  <button
-                    onClick={() => setDeleteTarget(item)}
-                    className="text-gray-400 hover:text-red-500 transition"
-                    title="Delete"
-                  >
+                  <button onClick={() => setDeleteTarget(item)} className="text-gray-400 hover:text-red-500 transition" title="Delete">
                     <MdDelete size={18} />
                   </button>
                 </td>
@@ -169,21 +127,15 @@ const AdminContacts = () => {
         </table>
       </div>
 
-      {/* View Message Modal */}
       {viewTarget && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg w-full max-w-lg">
             <div className="flex items-center justify-between p-5 border-b border-gray-100">
               <h3 className="text-lg font-semibold text-navy">Message</h3>
-              <button
-                onClick={() => setViewTarget(null)}
-                className="text-gray-400 hover:text-navy transition text-xl leading-none"
-              >
-                ×
-              </button>
+              <button onClick={() => setViewTarget(null)} className="text-gray-400 hover:text-navy transition text-xl leading-none">×</button>
             </div>
             <div className="p-5 space-y-4">
-              <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-gray-500 text-xs uppercase tracking-wide">From</span>
                   <p className="font-medium text-navy mt-0.5">{viewTarget.name}</p>
@@ -199,30 +151,15 @@ const AdminContacts = () => {
               </div>
               <div className="text-sm">
                 <span className="text-gray-500 text-xs uppercase tracking-wide">Message</span>
-                <p className="text-gray-700 mt-1 whitespace-pre-wrap leading-relaxed">
-                  {viewTarget.message}
-                </p>
+                <p className="text-gray-700 mt-1 whitespace-pre-wrap leading-relaxed">{viewTarget.message}</p>
               </div>
               <div className="text-xs text-gray-400 pt-1 border-t border-gray-100">
                 Received {new Date(viewTarget.createdAt).toLocaleString()}
               </div>
             </div>
             <div className="px-5 pb-5 flex justify-end gap-3">
-              <button
-                onClick={() => {
-                  setDeleteTarget(viewTarget)
-                  setViewTarget(null)
-                }}
-                className="text-sm text-red-500 hover:text-red-600 transition"
-              >
-                Delete
-              </button>
-              <button
-                onClick={() => setViewTarget(null)}
-                className="bg-navy text-white px-5 py-2 rounded-lg text-sm hover:bg-navy-light transition"
-              >
-                Close
-              </button>
+              <button onClick={() => { setDeleteTarget(viewTarget); setViewTarget(null) }} className="text-sm text-red-500 hover:text-red-600 transition">Delete</button>
+              <button onClick={() => setViewTarget(null)} className="bg-navy text-white px-5 py-2 rounded-lg text-sm hover:bg-navy-light transition">Close</button>
             </div>
           </div>
         </div>

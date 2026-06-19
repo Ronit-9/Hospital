@@ -2,11 +2,11 @@ import aboutBanner from '../../assets/about-banner.jpg.png'
 
 const AboutBanner = () => {
   return (
-    <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-10 md:py-16 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* background image with colored bar at bottom */}
         <div
-          className="relative w-full h-96 rounded-sm bg-contain bg-center bg-no-repeat"
+          className="relative w-full h-52 sm:h-72 md:h-96 rounded-sm bg-contain bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${aboutBanner})` }}
         >
           {/* colored bar at the bottom */}

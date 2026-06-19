@@ -1,13 +1,5 @@
 import { useState } from 'react'
-import {
-  MdAdd,
-  MdEdit,
-  MdDelete,
-  MdSearch,
-  MdClose,
-  MdCalendarToday,
-  MdPerson,
-} from 'react-icons/md'
+import { MdEdit, MdDelete, MdSearch, MdClose, MdCalendarToday, MdPerson } from 'react-icons/md'
 import {
   useGetAllAppointmentsQuery,
   useUpdateAppointmentStatusMutation,
@@ -16,7 +8,6 @@ import {
 import ConfirmDialog from '../../components/admin/ConfirmDialog'
 
 const STATUS_OPTIONS = ['pending', 'confirmed', 'cancelled', 'completed']
-
 const STATUS_STYLES = {
   pending: 'bg-yellow-50 text-yellow-600',
   confirmed: 'bg-green-50 text-green-600',
@@ -37,12 +28,12 @@ const AdminAppointments = () => {
   const [deleteAppointment, { isLoading: isDeleting }] = useDeleteAppointmentMutation()
 
   const appointments = data?.data || []
-
   const filtered = appointments.filter((a) => {
-    const patientName = a.patientId?.name?.toLowerCase() || ''
-    const doctorName = a.doctorId?.name?.toLowerCase() || ''
     const query = search.toLowerCase()
-    return patientName.includes(query) || doctorName.includes(query)
+    return (
+      a.patientId?.name?.toLowerCase().includes(query) ||
+      a.doctorId?.name?.toLowerCase().includes(query)
+    )
   })
 
   const openEditModal = (item) => {
@@ -74,7 +65,7 @@ const AdminAppointments = () => {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-navy">Manage Appointments</h1>
@@ -86,7 +77,7 @@ const AdminAppointments = () => {
         <div className="bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4">{error}</div>
       )}
 
-      <div className="relative w-72 mb-5">
+      <div className="relative w-full sm:w-72 mb-5">
         <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
           type="text"
@@ -97,8 +88,8 @@ const AdminAppointments = () => {
         />
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="bg-white rounded-lg border border-gray-100 overflow-x-auto">
+        <table className="w-full text-sm min-w-[640px]">
           <thead>
             <tr className="bg-gray-50 text-left text-gray-500 text-xs uppercase tracking-wide">
               <th className="px-5 py-3">Patient</th>
@@ -112,14 +103,10 @@ const AdminAppointments = () => {
           </thead>
           <tbody>
             {isLoading && (
-              <tr>
-                <td colSpan={7} className="text-center py-10 text-gray-400">Loading...</td>
-              </tr>
+              <tr><td colSpan={7} className="text-center py-10 text-gray-400">Loading...</td></tr>
             )}
             {!isLoading && filtered.length === 0 && (
-              <tr>
-                <td colSpan={7} className="text-center py-10 text-gray-400">No appointments found</td>
-              </tr>
+              <tr><td colSpan={7} className="text-center py-10 text-gray-400">No appointments found</td></tr>
             )}
             {filtered.map((item) => (
               <tr key={item._id} className="border-t border-gray-100 hover:bg-gray-50 transition">
@@ -141,24 +128,15 @@ const AdminAppointments = () => {
                 </td>
                 <td className="px-5 py-3 text-gray-500 capitalize">{item.type || '—'}</td>
                 <td className="px-5 py-3">
-                  <span
-                    className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${STATUS_STYLES[item.status] || 'bg-gray-100 text-gray-500'
-                      }`}
-                  >
+                  <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${STATUS_STYLES[item.status] || 'bg-gray-100 text-gray-500'}`}>
                     {item.status}
                   </span>
                 </td>
                 <td className="px-5 py-3 text-right">
-                  <button
-                    onClick={() => openEditModal(item)}
-                    className="text-gray-400 hover:text-cyan transition mr-3"
-                  >
+                  <button onClick={() => openEditModal(item)} className="text-gray-400 hover:text-cyan transition mr-3">
                     <MdEdit size={18} />
                   </button>
-                  <button
-                    onClick={() => setDeleteTarget(item)}
-                    className="text-gray-400 hover:text-red-500 transition"
-                  >
+                  <button onClick={() => setDeleteTarget(item)} className="text-gray-400 hover:text-red-500 transition">
                     <MdDelete size={18} />
                   </button>
                 </td>
@@ -168,26 +146,17 @@ const AdminAppointments = () => {
         </table>
       </div>
 
-      {/* Edit Status Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg w-full max-w-md">
-            <div className="flex items-center justify-between p-5 border-b border-gray-100 sticky top-0 bg-white">
+            <div className="flex items-center justify-between p-5 border-b border-gray-100">
               <h3 className="text-lg font-semibold text-navy">Update Appointment Status</h3>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-gray-400 hover:text-navy transition"
-              >
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-navy transition">
                 <MdClose size={22} />
               </button>
             </div>
-
             <form onSubmit={handleSubmit} className="p-5 space-y-4">
-              {error && (
-                <div className="bg-red-50 text-red-500 text-sm p-3 rounded-lg">{error}</div>
-              )}
-
-              {/* Read-only summary */}
+              {error && <div className="bg-red-50 text-red-500 text-sm p-3 rounded-lg">{error}</div>}
               <div className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm text-gray-600">
                 <p><span className="font-medium text-navy">Patient:</span> {editingAppointment?.patientId?.name}</p>
                 <p><span className="font-medium text-navy">Doctor:</span> {editingAppointment?.doctorId?.name}</p>
@@ -196,20 +165,18 @@ const AdminAppointments = () => {
                   <p><span className="font-medium text-navy">Symptoms:</span> {editingAppointment.symptoms}</p>
                 )}
               </div>
-
               <div>
                 <label className="text-sm font-medium text-gray-700">Status</label>
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-cyan transition capitalize"
+                  className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-cyan transition"
                 >
                   {STATUS_OPTIONS.map((s) => (
                     <option key={s} value={s} className="capitalize">{s}</option>
                   ))}
                 </select>
               </div>
-
               <button
                 type="submit"
                 disabled={isUpdating}

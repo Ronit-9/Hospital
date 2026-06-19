@@ -4,9 +4,9 @@ import { FaLinkedinIn, FaFacebookF, FaInstagram } from 'react-icons/fa'
 
 const Footer = () => {
   return (
-    <footer className="bg-navy text-white py-16 px-6">
+    <footer className="bg-navy text-white py-12 md:py-16 px-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-4 gap-8 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
           <div>
             <h3 className="text-2xl font-bold mb-3">
               <span className="text-white">MED</span>
@@ -50,7 +50,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-700 pt-6 flex items-center justify-between">
+        <div className="border-t border-gray-700 pt-6 flex flex-col sm:flex-row items-center gap-4 justify-between text-center sm:text-left">
           <p className="text-gray-400 text-sm">
             © 2024 Hospital's name All Rights Reserved by PNTEC-LTD
           </p>

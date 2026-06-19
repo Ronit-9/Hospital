@@ -15,7 +15,7 @@ export const contactApi = baseApi.injectEndpoints({
     }),
     markAsRead: builder.mutation({
       query: (id) => ({
-        url: `/contact/${id}/read`,
+        url: `/contact/${id}`,
         method: 'PUT',
       }),
       invalidatesTags: ['Contact'],

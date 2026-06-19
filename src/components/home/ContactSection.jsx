@@ -9,17 +9,17 @@ const contacts = [
 
 const ContactSection = () => {
   return (
-    <section className="py-16 px-6 bg-white">
+    <section className="py-12 md:py-16 px-4 sm:px-6 bg-white">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
+        <div className="text-center mb-10 md:mb-12">
           <p className="text-cyan text-sm font-semibold tracking-widest uppercase mb-2">
             Get In Touch
           </p>
-          <h2 className="text-4xl font-bold text-navy font-serif">Contact</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-navy font-serif">Contact</h2>
         </div>
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {contacts.map((item, i) => (
-            <div key={item.title} className={`p-8 rounded-lg ${i === 1 ? 'bg-navy text-white' : 'bg-bg-light text-navy'}`}>
+            <div key={item.title} className={`p-6 md:p-8 rounded-lg ${i === 1 ? 'bg-navy text-white' : 'bg-bg-light text-navy'}`}>
               <div className={`mb-4 ${i === 1 ? 'text-white' : 'text-navy'}`}>{item.icon}</div>
               <h4 className="font-bold text-xs tracking-widest uppercase mb-3">{item.title}</h4>
               {item.lines.map((line) => (
