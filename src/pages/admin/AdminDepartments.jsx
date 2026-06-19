@@ -77,15 +77,15 @@ const AdminDepartments = () => {
   }
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-navy">Manage Departments</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-navy">Manage Departments</h1>
           <p className="text-gray-500 text-sm mt-1">{departments.length} total departments</p>
         </div>
         <button
           onClick={openAddModal}
-          className="flex items-center gap-2 bg-navy text-white px-5 py-2.5 rounded-lg text-sm hover:bg-navy-light transition"
+          className="flex items-center justify-center gap-2 bg-navy text-white px-5 py-2.5 rounded-lg text-sm hover:bg-navy-light transition w-full sm:w-auto"
         >
           <MdAdd size={18} /> Add Department
         </button>
@@ -95,7 +95,7 @@ const AdminDepartments = () => {
         <div className="bg-red-50 text-red-500 text-sm p-3 rounded-lg mb-4">{error}</div>
       )}
 
-      <div className="relative w-72 mb-5">
+      <div className="relative w-full sm:w-72 mb-5">
         <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
         <input
           type="text"
@@ -106,13 +106,54 @@ const AdminDepartments = () => {
         />
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+      {/* Mobile / tablet: card list */}
+      <div className="md:hidden space-y-3">
+        {isLoading && (
+          <div className="text-center py-10 text-gray-400 bg-white rounded-lg border border-gray-100">Loading...</div>
+        )}
+        {!isLoading && filtered.length === 0 && (
+          <div className="text-center py-10 text-gray-400 bg-white rounded-lg border border-gray-100">No departments found</div>
+        )}
+        {filtered.map((dept) => (
+          <div key={dept._id} className="bg-white rounded-lg border border-gray-100 p-4 flex gap-3">
+            <div className="w-14 h-14 shrink-0 rounded bg-bg-light overflow-hidden flex items-center justify-center">
+              {dept.image ? (
+                <img src={dept.image} alt={dept.name} className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-cyan text-xs text-center px-1">No img</span>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="font-medium text-navy truncate">{dept.name}</h3>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button onClick={() => openEditModal(dept)} className="text-gray-400 hover:text-cyan transition p-1">
+                    <MdEdit size={18} />
+                  </button>
+                  <button onClick={() => setDeleteTarget(dept)} className="text-gray-400 hover:text-red-500 transition p-1">
+                    <MdDelete size={18} />
+                  </button>
+                </div>
+              </div>
+              {dept.description && (
+                <p className="text-gray-500 text-sm mt-1 line-clamp-2">{dept.description}</p>
+              )}
+              <span className="inline-block bg-cyan/10 text-cyan px-2 py-1 rounded text-xs font-medium mt-2">
+                {dept.doctorCount ?? 0} doctors
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop: table */}
+      <div className="hidden md:block bg-white rounded-lg border border-gray-100 overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-gray-50 text-left text-gray-500 text-xs uppercase tracking-wide">
               <th className="px-5 py-3">Image</th>
               <th className="px-5 py-3">Name</th>
-              <th className="px-5 py-3">Description</th>
+              <th className="px-5 py-3 hidden lg:table-cell">Description</th>
               <th className="px-5 py-3">Doctors</th>
               <th className="px-5 py-3 text-right">Actions</th>
             </tr>
@@ -135,14 +176,14 @@ const AdminDepartments = () => {
                     )}
                   </div>
                 </td>
-                <td className="px-5 py-3 font-medium text-navy">{dept.name}</td>
-                <td className="px-5 py-3 text-gray-500 max-w-xs truncate">{dept.description || '—'}</td>
+                <td className="px-5 py-3 font-medium text-navy whitespace-nowrap">{dept.name}</td>
+                <td className="px-5 py-3 text-gray-500 max-w-xs truncate hidden lg:table-cell">{dept.description || '—'}</td>
                 <td className="px-5 py-3">
                   <span className="bg-cyan/10 text-cyan px-2 py-1 rounded text-xs font-medium">
                     {dept.doctorCount ?? 0}
                   </span>
                 </td>
-                <td className="px-5 py-3 text-right">
+                <td className="px-5 py-3 text-right whitespace-nowrap">
                   <button onClick={() => openEditModal(dept)} className="text-gray-400 hover:text-cyan transition mr-3">
                     <MdEdit size={18} />
                   </button>
