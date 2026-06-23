@@ -24,7 +24,7 @@ const app = express()
 
 // connect to MongoDB
 connectDB()
-
+app.set('trust proxy', 1)
 // middleware
 app.use(cors({
   origin: [

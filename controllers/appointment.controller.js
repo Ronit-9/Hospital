@@ -5,7 +5,6 @@ import { successResponse, errorResponse } from '../utils/apiResponse.js'
 export const bookAppointment = async (req, res) => {
   const { doctorId, departmentId, date, timeSlot, type, symptoms, gender } = req.body
 
-  // check if slot already booked
   const exists = await Appointment.findOne({
     doctorId,
     date,
@@ -30,21 +29,26 @@ export const bookAppointment = async (req, res) => {
   return successResponse(res, 201, 'Appointment booked', appointment)
 }
 
-// GET all appointments for logged in patient
+// GET all appointments for logged-in patient
 export const getMyAppointments = async (req, res) => {
   const appointments = await Appointment.find({ patientId: req.user._id })
-    .populate('doctorId')
+    .populate({
+      path: 'doctorId',
+      populate: { path: 'userId', select: 'name email profileImage' }, // ← deep populate so doctorId.userId.name works on the frontend
+    })
     .populate('departmentId', 'name')
     .sort({ date: -1 })
+
   return successResponse(res, 200, 'Appointments fetched', appointments)
 }
 
-// GET all appointments for logged in doctor
+// GET all appointments for a specific doctor
 export const getDoctorAppointments = async (req, res) => {
   const appointments = await Appointment.find({ doctorId: req.params.doctorId })
     .populate('patientId', 'name email phone')
     .populate('departmentId', 'name')
     .sort({ date: -1 })
+
   return successResponse(res, 200, 'Appointments fetched', appointments)
 }
 
@@ -60,10 +64,12 @@ export const updateAppointmentStatus = async (req, res) => {
   if (!appointment) {
     return errorResponse(res, 404, 'Appointment not found')
   }
+
   return successResponse(res, 200, 'Appointment status updated', appointment)
 }
 
-// DELETE cancel appointment — patient only
+// PATCH cancel appointment — patient only
+// Uses PATCH (not DELETE) because the record is kept with status = 'cancelled'
 export const cancelAppointment = async (req, res) => {
   const appointment = await Appointment.findById(req.params.id)
 
@@ -71,9 +77,12 @@ export const cancelAppointment = async (req, res) => {
     return errorResponse(res, 404, 'Appointment not found')
   }
 
-  // only the patient who booked can cancel
   if (appointment.patientId.toString() !== req.user._id.toString()) {
     return errorResponse(res, 403, 'Not authorized to cancel this appointment')
+  }
+
+  if (!['pending', 'confirmed'].includes(appointment.status)) {
+    return errorResponse(res, 400, 'Only pending or confirmed appointments can be cancelled')
   }
 
   appointment.status = 'cancelled'
@@ -86,8 +95,12 @@ export const cancelAppointment = async (req, res) => {
 export const getAllAppointments = async (req, res) => {
   const appointments = await Appointment.find()
     .populate('patientId', 'name email')
-    .populate('doctorId')
+    .populate({
+      path: 'doctorId',
+      populate: { path: 'userId', select: 'name email profileImage' },
+    })
     .populate('departmentId', 'name')
     .sort({ date: -1 })
+
   return successResponse(res, 200, 'All appointments fetched', appointments)
 }

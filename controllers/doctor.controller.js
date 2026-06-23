@@ -13,6 +13,16 @@ export const getDoctors = async (req, res) => {
     return errorResponse(res, 500, 'Server error', err.message)
   }
 }
+// GET my doctor profile — logged in doctor only
+export const getMyDoctorProfile = async (req, res) => {
+  const doctor = await Doctor.findOne({ userId: req.user._id })
+    .populate('userId', 'name email phone profileImage')
+    .populate('department', 'name')
+  if (!doctor) {
+    return errorResponse(res, 404, 'Doctor profile not found')
+  }
+  return successResponse(res, 200, 'Doctor profile fetched', doctor)
+}
 
 // GET single doctor
 export const getDoctor = async (req, res) => {
