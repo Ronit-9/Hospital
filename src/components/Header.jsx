@@ -14,21 +14,38 @@ const navLinks = [
   { label: 'Contact', to: '/contact' },
 ]
 
+const dashboardByRole = {
+  admin: '/admin/dashboard',
+  doctor: '/doctor/dashboard',
+  patient: '/patient/dashboard',
+}
+
 const Header = () => {
   const { user, isLoggedIn } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [logout] = useLogoutMutation()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
-  // Only admins have a dashboard to view here — every other logged-in role goes home.
-  const accountLink = user?.role === 'admin' ? '/admin/dashboard' : '/'
+  const accountLink = dashboardByRole[user?.role] || '/'
 
   const handleLogout = async () => {
     await logout()
     dispatch(clearCredentials())
     setMenuOpen(false)
     navigate('/')
+  }
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault()
+    const trimmed = searchQuery.trim()
+    if (!trimmed) return
+    navigate(`/doctors?search=${encodeURIComponent(trimmed)}`)
+    setSearchOpen(false)
+    setMenuOpen(false)
+    setSearchQuery('')
   }
 
   return (
@@ -65,7 +82,6 @@ const Header = () => {
             </div>
           </div>
 
-          {/* mobile/tablet menu toggle */}
           <button
             onClick={() => setMenuOpen((v) => !v)}
             className="lg:hidden text-navy text-2xl p-1"
@@ -79,7 +95,6 @@ const Header = () => {
       {/* NAV BAR */}
       <nav className="bg-navy py-4 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          {/* desktop nav links */}
           <div className="hidden lg:flex items-center gap-8">
             <Link to="/" className="text-white font-semibold hover:text-cyan transition">Home</Link>
             <Link to="/about" className="text-white hover:text-cyan transition">About us</Link>
@@ -89,11 +104,37 @@ const Header = () => {
             <Link to="/contact" className="text-white hover:text-cyan transition">Contact</Link>
           </div>
 
-          {/* desktop right controls */}
-          <div className="hidden lg:flex items-center gap-4">
-            <button className="text-white hover:text-cyan transition">
-              <MdSearch className="text-xl" />
+          <div className="hidden lg:flex items-center gap-4 relative">
+            <button
+              onClick={() => setSearchOpen((v) => !v)}
+              className="text-white hover:text-cyan transition"
+              aria-label="Toggle search"
+            >
+              {searchOpen ? <MdClose className="text-xl" /> : <MdSearch className="text-xl" />}
             </button>
+
+            {searchOpen && (
+              <form
+                onSubmit={handleSearchSubmit}
+                className="absolute top-full right-0 mt-3 bg-white rounded-lg shadow-lg p-2 flex items-center gap-2 w-72 z-50"
+              >
+                <input
+                  type="text"
+                  autoFocus
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search doctors, specialties..."
+                  className="flex-1 text-navy text-sm px-3 py-2 outline-none"
+                />
+                <button
+                  type="submit"
+                  className="bg-cyan text-white p-2 rounded-md hover:bg-navy-light transition"
+                  aria-label="Search"
+                >
+                  <MdSearch className="text-lg" />
+                </button>
+              </form>
+            )}
 
             <Link
               to="/appointment"
@@ -127,10 +168,13 @@ const Header = () => {
             )}
           </div>
 
-          {/* mobile/tablet condensed row */}
           <div className="flex lg:hidden items-center justify-between w-full">
-            <button className="text-white hover:text-cyan transition" aria-label="Search">
-              <MdSearch className="text-xl" />
+            <button
+              onClick={() => setSearchOpen((v) => !v)}
+              className="text-white hover:text-cyan transition"
+              aria-label="Toggle search"
+            >
+              {searchOpen ? <MdClose className="text-xl" /> : <MdSearch className="text-xl" />}
             </button>
 
             {isLoggedIn ? (
@@ -153,7 +197,30 @@ const Header = () => {
           </div>
         </div>
 
-        {/* mobile/tablet dropdown panel */}
+        {/* mobile search bar, appears below the row when toggled */}
+        {searchOpen && (
+          <form
+            onSubmit={handleSearchSubmit}
+            className="lg:hidden mt-3 flex items-center gap-2 bg-white rounded-lg p-1"
+          >
+            <input
+              type="text"
+              autoFocus
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search doctors, specialties..."
+              className="flex-1 text-navy text-sm px-3 py-2 outline-none"
+            />
+            <button
+              type="submit"
+              className="bg-cyan text-white p-2 rounded-md hover:bg-navy-light transition"
+              aria-label="Search"
+            >
+              <MdSearch className="text-lg" />
+            </button>
+          </form>
+        )}
+
         {menuOpen && (
           <div className="lg:hidden mt-4 pt-4 border-t border-navy-light flex flex-col gap-1">
             {navLinks.map((link) => (
@@ -184,7 +251,6 @@ const Header = () => {
               </button>
             )}
 
-            {/* contact info, visible on mobile/tablet since the top bar version is hidden below lg */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5 pt-4 border-t border-navy-light">
               <div className="flex items-center gap-2">
                 <MdPhone className="text-cyan text-xl flex-shrink-0" />

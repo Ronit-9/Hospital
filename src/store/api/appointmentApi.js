@@ -18,7 +18,7 @@ export const appointmentApi = baseApi.injectEndpoints({
     cancelAppointment: builder.mutation({
       query: (id) => ({
         url: `/appointments/${id}/cancel`,
-        method: 'DELETE',
+        method: 'PUT',            // ← was DELETE, router expects PUT
       }),
       invalidatesTags: ['Appointment'],
     }),

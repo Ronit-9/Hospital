@@ -40,6 +40,11 @@ export const doctorApi = baseApi.injectEndpoints({
         'Doctor',
       ],
     }),
+    getMyDoctorProfile: builder.query({
+      query: () => '/doctors/me',
+      providesTags: ['Doctor'],
+    }),
+
     deleteDoctor: builder.mutation({
       query: (id) => ({
         url: `/doctors/${id}`,
@@ -50,6 +55,7 @@ export const doctorApi = baseApi.injectEndpoints({
         'Doctor',
       ],
     }),
+
   }),
 })
 
@@ -60,4 +66,5 @@ export const {
   useCreateDoctorMutation,
   useUpdateDoctorMutation,
   useDeleteDoctorMutation,
+  useGetMyDoctorProfileQuery,
 } = doctorApi

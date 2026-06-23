@@ -83,14 +83,14 @@ const AdminDashboard = () => {
           color="bg-indigo-50"
         />
         <StatCard
-          to="/admin/users"
+          to="/admin/appointments"
           icon={<MdPeople size={22} className="text-emerald-500" />}
-          label="Patients"
-          value={patients.length}
+          label="Appointments with patients"
+          value={appointments.length}
           color="bg-emerald-50"
         />
         <StatCard
-          to="/admin/messages"
+          to="/admin/contacts"
           icon={<MdEmail size={22} className="text-rose-500" />}
           label="Messages"
           value={messages.length}
@@ -134,9 +134,9 @@ const AdminDashboard = () => {
                   <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all ${status === 'pending' ? 'bg-yellow-400'
-                          : status === 'confirmed' ? 'bg-green-400'
-                            : status === 'cancelled' ? 'bg-red-400'
-                              : 'bg-blue-400'
+                        : status === 'confirmed' ? 'bg-green-400'
+                          : status === 'cancelled' ? 'bg-red-400'
+                            : 'bg-blue-400'
                         }`}
                       style={{ width: `${pct}%` }}
                     />
