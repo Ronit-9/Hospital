@@ -154,7 +154,7 @@ const AdminDashboard = () => {
             <h2 className="text-base font-semibold text-navy flex items-center gap-2">
               <MdEmail className="text-cyan" /> Recent Messages
             </h2>
-            <Link to="/admin/messages" className="text-xs text-cyan hover:underline">View all</Link>
+            <Link to="/admin/contacts" className="text-xs text-cyan hover:underline">View all</Link>
           </div>
           <div className="space-y-3">
             {recentMessages.length === 0 && (
